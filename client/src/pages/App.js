@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import "./App.css";
-import image from "../src/clearsky.png";
+import "../css/App.css";
+import image from "../images/clearsky.png";
 function App() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
@@ -17,7 +17,7 @@ function App() {
 
     setErrorMessage("");
     try {
-      const response = await fetch(`/.netlify/functions/api?city=${city}`);
+      const response = await fetch(`http://localhost:5000/weather?city=${city}`);
 
       const data = await response.json();
       if (data.error === "City is required") {

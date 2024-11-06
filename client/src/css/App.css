@@ -39,10 +39,10 @@
 
 
 .background-image {
-  background-image: url("../src/vecteezy_twillight-sky-blurred-background_26186529.jpg");
+  background-image: url("../images/vecteezy_twillight-sky-blurred-background_26186529.jpg");
   background-position: center;
   background-repeat: no-repeat; 
-  min-height: 103vh;
+  min-height: 104vh;
   background-size: cover;
   background-position: center;
   margin-top: -21px;
@@ -79,7 +79,7 @@ body {
 }
 
 .background-image {
-  background-image: url('./vecteezy_twillight-sky-blurred-background_26186529.jpg');
+  background-image: url("../images/vecteezy_twillight-sky-blurred-background_26186529.jpg");
   background-size: cover;
   background-position: center;
   height: 100vh;
