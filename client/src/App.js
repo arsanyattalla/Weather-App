@@ -1,38 +1,39 @@
 import React, { useState } from "react";
 import "./App.css";
 import image from "../src/clearsky.png";
-
 function App() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
   const [clear, setClear] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(false); 
+  const [temp, setTemp] = useState(null);  
 
   const getWeather = async () => {
     if (city === "") {
       setErrorMessage(true);
-      setWeather(null);
+      setWeather("");
       return;
     }
-  
-    setErrorMessage(false);
+
+    setErrorMessage("");
     try {
-      // Add the city query parameter to the API request
-      const response = await fetch(`/.netlify/functions/api?city=${city}`);  // Pass city as a query param
+      const response = await fetch(`/.netlify/functions/api?city=${city}`);
       const data = await response.json();
-  
       if (data.error === "City is required") {
         setWeather(null);
         setClear(null);
       } else {
         console.log(data);
         setWeather(data);
+        const temp = (data.main.temp -  273.15) * (9/5) + 32 
+        setTemp(temp)
         if (data.weather[0].description === "clear sky") {
           setClear(true);
         } else {
           setClear(false);
         }
       }
+      console.log(clear);
     } catch (error) {
       console.error("Error fetching weather data:", error);
       setClear(false);
@@ -60,8 +61,8 @@ function App() {
           <div className="weather-info">
             <h2>{weather.name}</h2>
 
-            {weather.main && weather.main.temp ? (
-              <p>Temperature: {weather.main.temp}°C</p>
+            {weather.main  ? (
+              <p>Temperature: {temp}°F</p>
             ) : (
               <p>Please Enter a valid City Name</p>
             )}
@@ -73,7 +74,7 @@ function App() {
             ) : (
               <p></p>
             )}
-            {clear ? <img className="image" alt="pic" src={image} /> : <p></p>}
+            {clear ? <img className="image" alt="pic" src={image}></img> : <p></p>}
           </div>
         )}
       </div>
