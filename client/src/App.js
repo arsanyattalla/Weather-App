@@ -26,8 +26,8 @@ function App() {
       } else {
         console.log(data);
         setWeather(data);
-        const temp = (data.main.temp -  273.15) * (9/5) + 32 
-        Math.round(temp)
+        let temp = (data.main.temp -  273.15) * (9/5) + 32 
+        temp = Math.round(temp)
         setTemp(temp)
         if (data.weather[0].description === "clear sky") {
           setClear(true);
