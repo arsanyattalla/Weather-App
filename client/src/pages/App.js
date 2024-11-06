@@ -43,7 +43,6 @@ function App() {
         setTemp(temp)
 
         let desc = data.weather[0].description
-        let decContains = desc.includes()
 
         switch(desc){
           case "clear sky":
