@@ -1,25 +1,26 @@
 import React, { useState } from "react";
 import "./App.css";
 import image from "../src/clearsky.png";
+
 function App() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
   const [clear, setClear] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(false); 
+  const [errorMessage, setErrorMessage] = useState(false);
 
   const getWeather = async () => {
     if (city === "") {
       setErrorMessage(true);
-      setWeather("");
+      setWeather(null);
       return;
     }
-
-    setErrorMessage("");
+  
+    setErrorMessage(false);
     try {
-      const response = await fetch(
-        `http://localhost:5000/weather?city=${city}`
-      );
+      // Add the city query parameter to the API request
+      const response = await fetch(`/.netlify/functions/api?city=${city}`);  // Pass city as a query param
       const data = await response.json();
+  
       if (data.error === "City is required") {
         setWeather(null);
         setClear(null);
@@ -32,7 +33,6 @@ function App() {
           setClear(false);
         }
       }
-      console.log(clear);
     } catch (error) {
       console.error("Error fetching weather data:", error);
       setClear(false);
@@ -73,7 +73,7 @@ function App() {
             ) : (
               <p></p>
             )}
-            {clear ? <img className="image" alt="pic" src={image}></img> : <p></p>}
+            {clear ? <img className="image" alt="pic" src={image} /> : <p></p>}
           </div>
         )}
       </div>
