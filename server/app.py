@@ -3,7 +3,6 @@ import os
 from routes import get_weather_route  
 from flask_cors import CORS
 
-
 app = Flask(__name__)
 CORS(app)
 
