@@ -73,7 +73,7 @@ function App() {
             ) : (
               <p></p>
             )}
-            {clear ? <img className="image" src={image}></img> : <p></p>}
+            {clear ? <img className="image" alt="pic" src={image}></img> : <p></p>}
           </div>
         )}
       </div>
