@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import "../css/App.css";
 import image from "../images/clearsky.png";
+import cloud from "../images/cloudy.png"
 function App() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
   const [clear, setClear] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false); 
   const [temp, setTemp] = useState(null);  
+  const [cloudy, setCloudy] = useState(false);
+
 
   const getWeather = async () => {
     if (city === "") {
@@ -26,13 +29,40 @@ function App() {
       } else {
         console.log(data);
         setWeather(data);
+
+
+        
+
+        
+
+
+
+
         let temp = (data.main.temp -  273.15) * (9/5) + 32 
         temp = Math.round(temp)
         setTemp(temp)
-        if (data.weather[0].description === "clear sky") {
-          setClear(true);
-        } else {
-          setClear(false);
+
+        let desc = data.weather[0].description
+        let decContains = desc.includes()
+
+        switch(desc){
+          case "clear sky":
+            setClear(true);
+            setCloudy(false);
+            console.log("clear")
+            break;
+          case "few clouds":
+            setCloudy(true);
+            setClear(false)
+            break;
+          case "cloudy":
+            setCloudy(true)
+            setClear(false)
+            break;
+          default:
+            setCloudy(false);
+            setClear(false)
+
         }
       }
       console.log(clear);
@@ -77,6 +107,7 @@ function App() {
               <p></p>
             )}
             {clear ? <img className="image" alt="pic" src={image}></img> : <p></p>}
+            {cloudy ? <img className="image" alt="pic" src={cloud}></img> : <p></p>}
           </div>
         )}
       </div>
