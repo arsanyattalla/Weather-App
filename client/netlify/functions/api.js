@@ -11,7 +11,7 @@ exports.handler = async function (event, context) {
   }
 
   // Retrieve the API key from environment variables
-  const apiKey = process.env.API_KEY;
+  const apiKey = '30d4741c779ba94c470ca1f63045390a';
   if (!apiKey) {
     return {
       statusCode: 500,
