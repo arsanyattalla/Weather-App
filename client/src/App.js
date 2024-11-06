@@ -18,6 +18,7 @@ function App() {
     setErrorMessage("");
     try {
       const response = await fetch(`/.netlify/functions/api?city=${city}`);
+
       const data = await response.json();
       if (data.error === "City is required") {
         setWeather(null);
@@ -26,6 +27,7 @@ function App() {
         console.log(data);
         setWeather(data);
         const temp = (data.main.temp -  273.15) * (9/5) + 32 
+        Math.round(temp)
         setTemp(temp)
         if (data.weather[0].description === "clear sky") {
           setClear(true);
