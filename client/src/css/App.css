@@ -154,10 +154,25 @@ html, body {
 }
 
 .image {
-  width: 50px; /* Adjust the size as per your preference */
-  height: 60px; /* Same as width to keep it square */
+  width: 50px; 
+  height: 60px; 
   margin-top: -10px;
-  border-radius: 50%; /* Makes the image circular */
-  object-fit: cover; /* Ensures the image fits within the container */
+  border-radius: 50%; 
+  object-fit: cover; 
   transition: transform 0.3s ease-in-out;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate {
+  animation: fadeInUp 0.5s ease-out;
 }
