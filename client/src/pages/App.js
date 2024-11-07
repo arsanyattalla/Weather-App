@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "../css/App.css";
 import image from "../images/clearsky.png";
 import cloud from "../images/cloudy.png";
+import { WiThermometer } from "weather-icons-react";
+
 function App() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
@@ -14,20 +16,19 @@ function App() {
   const getWeather = async () => {
     if (city === "") {
       setErrorMessage(true);
-      setWeather("");
+      setWeather(null);
       return;
     }
 
-    setErrorMessage("");
+    setErrorMessage(false);
     try {
       const response = await fetch(`/.netlify/functions/api?city=${city}`);
-
       const data = await response.json();
       if (data.error === "City is required") {
         setWeather(null);
-        setClear(null);
+        setClear(false);
+        setCloudy(false);
       } else {
-        console.log(data);
         setWeather(data);
         setAnimate(true);
         setTimeout(() => setAnimate(false), 500);
@@ -42,12 +43,8 @@ function App() {
           case "clear sky":
             setClear(true);
             setCloudy(false);
-            console.log("clear");
             break;
           case "few clouds":
-            setCloudy(true);
-            setClear(false);
-            break;
           case "cloudy":
             setCloudy(true);
             setClear(false);
@@ -57,12 +54,13 @@ function App() {
             setClear(false);
         }
       }
-      console.log(clear);
     } catch (error) {
       console.error("Error fetching weather data:", error);
       setClear(false);
+      setCloudy(false);
     }
   };
+
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       getWeather();
@@ -90,29 +88,22 @@ function App() {
         {weather && (
           <div className={`weather-info ${animate ? "animate" : ""}`}>
             <h2>{weather.name}</h2>
-
             {weather.main ? (
-              <p>Temperature: {temp}°F</p>
+              <div className="temperature-container">
+                <WiThermometer size={34} color="#428ee6" />
+                <span>{temp}°F</span>
+              </div>
             ) : (
               <p>Please Enter a valid City Name</p>
             )}
 
-            {weather.weather &&
-            weather.weather[0] &&
-            weather.weather[0].description ? (
-              <p>Weather: {weather.weather[0].description}</p>
-            ) : (
-              <p></p>
-            )}
-            {clear ? (
-              <img className="image" alt="pic" src={image}></img>
-            ) : (
-              <p></p>
-            )}
-            {cloudy ? (
-              <img className="image" alt="pic" src={cloud}></img>
-            ) : (
-              <p></p>
+            {weather.weather && weather.weather[0] && (
+              <div className="weather-content">
+                {clear && <img className="image" alt="Clear sky" src={image} />}
+                {cloudy && <img className="image" alt="Cloudy" src={cloud} />}
+                <p>{weather.weather[0].description}</p>
+                
+              </div>
             )}
           </div>
         )}
