@@ -22,9 +22,7 @@ function App() {
 
     setErrorMessage(false);
     try {
-      const response = await fetch(
-        `http://localhost:5000/weather?city=${city}`
-      );
+      const response = await fetch(`/.netlify/functions/api?city=${city}`);
       const data = await response.json();
       if (data.error === "City is required") {
         setWeather(null);
