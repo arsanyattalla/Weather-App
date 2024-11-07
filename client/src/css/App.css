@@ -103,6 +103,8 @@ html, body {
   width: 100%;
   text-align: center;
   color: #fff;
+  animation: fadeInUp 2s ease-out;
+
 }
 
 .header {
