@@ -38,26 +38,11 @@
 }
 
 
-.background-image {
-  background-image: url("../images/vecteezy_twillight-sky-blurred-background_26186529.jpg");
-  background-position: center;
-  background-repeat: no-repeat; 
-  min-height: 104vh;
-  background-size: cover;
-  background-position: center;
-  margin-top: -21px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background-size: cover;
-  background-position: top;
-}
+
 
 
 .header{
   align-items: top;
-
 }
 
 /* Global Styles */
@@ -95,8 +80,19 @@ html, body {
   margin-bottom: auto;
 }
 
+.background-cold {
+  background-image: url("../images/vecteezy_ai-generated-beautifully-illuminated-bridge-at-night-with_37981764.jpg");
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  margin-bottom: auto;
+}
+
 .content-wrapper {
-  background: rgba(0, 0, 0, 0.6); /* semi-transparent background for readability */
   padding: 30px;
   border-radius: 8px;
   max-width: 500px;
@@ -104,6 +100,7 @@ html, body {
   text-align: center;
   color: #fff;
   animation: fadeInUp 2s ease-out;
+  margin-bottom: 100px;
 
 }
 
@@ -125,7 +122,7 @@ html, body {
 
 .weather-button {
   padding: 10px 20px;
-  background-color: #2c4e64;
+  background-color: #3da5eb;
   color: white;
   border: none;
   border-radius: 4px;
@@ -142,17 +139,23 @@ html, body {
   padding: 20px;
   border-radius: 8px;
   margin-top: 20px;
+  justify-content: center;
+  align-items: center;
 }
 
 .weather-info h2 {
   margin: 0;
   font-size: 2rem;
   font-weight: bold;
+  justify-content: center;
+  align-items: center;
 }
 
 .weather-info p {
   font-size: 1.1rem;
   margin-top: 10px;
+    justify-content: center;
+  align-items: center;
 }
 .temperature-container {
   display: flex;
