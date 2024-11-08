@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "../css/App.css";
 import image from "../images/clearsky.png";
 import cloud from "../images/cloudy.png";
@@ -14,28 +14,26 @@ function App() {
   const [cloudy, setCloudy] = useState(false);
   const [animate, setAnimate] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [cold,setCold] = useState(false)
+  const [cold, setCold] = useState(false);
 
-  const getWeather = async () => {
+  const getWeather = useCallback(async () => {
     setLoading(true);
-    setWeather(null);  
+    setWeather(null);
 
     if (city === "") {
-      setErrorMessage('Please Enter City name');
+      setErrorMessage(true);
       setLoading(false);
       return;
     }
 
     setErrorMessage(false);
     try {
-      const response = await fetch(`http://localhost:5000/weather?city=${city}`);
+      const response = await fetch(`/.netlify/functions/api?city=${city}`);
       const data = await response.json();
-    
+
       setTimeout(() => {
         setLoading(false);
-    
-        if (!data.main || !data.main.temp) {  
-          setErrorMessage("Invalid city");
+        if (data.error === "City is required") {
           setWeather(null);
           setClear(false);
           setCloudy(false);
@@ -43,57 +41,51 @@ function App() {
           setWeather(data);
           setAnimate(true);
           setTimeout(() => setAnimate(false), 500);
-    
+
           let temp = (data.main.temp - 273.15) * (9 / 5) + 32;
           temp = Math.round(temp);
-          setCold(temp <= 70); 
+          setCold(temp <= 70);
           setTemp(temp);
-    
+
           let desc = data.weather[0].description;
-    
-          switch (desc) {
-            case "clear sky":
-              setClear(true);
-              setCloudy(false);
-              break;
-            case "few clouds":
-            case "cloudy":
-            case "overcast clouds":
-              setCloudy(true);
-              setClear(false);
-              break;
-            default:
-              setCloudy(false);
-              setClear(false);
+          if (desc === "clear sky") {
+            setClear(true);
+            setCloudy(false);
+          } else if (desc === "few clouds" || desc === "cloudy") {
+            setCloudy(true);
+            setClear(false);
+          } else {
+            setCloudy(false);
+            setClear(false);
           }
         }
       }, 1000);
-    
     } catch (error) {
       console.error("Error fetching weather data:", error);
-      setErrorMessage("Failed to fetch weather data.");
       setClear(false);
       setCloudy(false);
       setLoading(false);
     }
-  }
+  }, [city]);
+
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       getWeather();
     }
   };
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (city) {
         getWeather();
       }
-    }, 120000); // Fetches weather data every 60 seconds
+    }, 60000); // Fetches weather data every 60 seconds
 
     return () => clearInterval(interval); // Clear the interval on component unmount
-  }, [city]); // Rerun effect if city changes
+  }, [city, getWeather]); // Now includes getWeather as a dependency
 
   return (
-    <div className={`background-image ${cold ? "background-cold" : ""}`}>
+    <div className={`background-image ${cold ? "cold-background" : ""}`}>
       <div className="content-wrapper">
         <h1 className="title">Weather App</h1>
         <div className="header">
@@ -109,10 +101,8 @@ function App() {
             Get Weather
           </button>
         </div>
-        {errorMessage && <p className="weather-info">{errorMessage}</p>}
-        {loading && (
-          <OrbitProgress variant="track-disc" color="#56667e" size="small" text="" textColor="#521d1d" />
-        )}
+        {errorMessage && <p className="weather-info">Please Enter City</p>}
+        {loading && <OrbitProgress variant="track-disc" color="#56667e" size="small" />}
         {!loading && weather && (
           <div className={`weather-info ${animate ? "animate" : ""}`}>
             <h2>{weather.name}</h2>
