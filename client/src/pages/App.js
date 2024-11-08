@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import "../css/App.css";
 import image from "../images/clearsky.png";
 import cloud from "../images/cloudy.png";
@@ -28,7 +28,7 @@ function App() {
 
     setErrorMessage(false);
     try {
-      const response = await fetch(`/.netlify/functions/api?city=${city}`);
+      const response = await fetch(`http://localhost:5000/weather?city=${city}`);
       const data = await response.json();
     
       setTimeout(() => {
@@ -82,6 +82,15 @@ function App() {
       getWeather();
     }
   };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (city) {
+        getWeather();
+      }
+    }, 120000); // Fetches weather data every 60 seconds
+
+    return () => clearInterval(interval); // Clear the interval on component unmount
+  }, [city]); // Rerun effect if city changes
 
   return (
     <div className={`background-image ${cold ? "background-cold" : ""}`}>
