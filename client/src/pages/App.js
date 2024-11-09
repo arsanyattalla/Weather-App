@@ -41,7 +41,9 @@ function App() {
     }
 
     try {
-      const response = await fetch(`/.netlify/functions/api?city=${city}`);
+      const response = await fetch(
+        `http://localhost:5000/weather?city=${city}`
+      );
       const data = await response.json();
       console.log(data);
       setTimeout(() => {
@@ -94,7 +96,7 @@ function App() {
           } else if (desc.includes("clouds") || desc === "cloudy") {
             setCloudy(true);
             setClear(false);
-            setRain(false)
+            setRain(false);
           } else if (desc.includes("rain")) {
             setCloudy(false);
             setClear(false);
@@ -111,7 +113,7 @@ function App() {
       setCloudy(false);
       setLoading(false);
     }
-  }, [city]);
+  }, [city,night]);
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -131,7 +133,7 @@ function App() {
 
   return (
     <div
-      className={`background-image ${cold && night && !cloudy ? "background-image" : ""} ${
+      className={`background-image ${cold && night && !cloudy ? "background-cold" : ""} ${
         hot && clear && !cold ? "background-hot" : ""
       } ${cold && night && cloudy ? "background-image" : ""} ${cold && night && clear ? "background-cold" : ""} ${rain && !night  ? "background-rain-day" : ""} ${rain && night  ? "background-rain-night" : ""} `}
     >
