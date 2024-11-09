@@ -95,7 +95,7 @@ function App() {
   return (
     <div
       className={`background-image ${cold ? "background-cold" : ""} ${
-        hot ? "background-hot" : ""
+        hot || clear ? "background-hot" : ""
       }`}
     >
       <div className="content-wrapper">
