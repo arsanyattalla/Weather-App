@@ -92,6 +92,19 @@ html, body {
   margin-bottom: auto;
 }
 
+
+.background-hot {
+  background-image: url("../images/vecteezy_sunny-autumnal-meadow-and-yellow-forest-on-its-edges_12637243.jpg");
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  margin-bottom: auto;
+}
+
 .content-wrapper {
   padding: 30px;
   border-radius: 8px;

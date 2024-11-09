@@ -15,6 +15,7 @@ function App() {
   const [animate, setAnimate] = useState(false);
   const [loading, setLoading] = useState(false);
   const [cold, setCold] = useState(false);
+  const [hot, setHot] = useState(false);
 
   const getWeather = useCallback(async () => {
     setLoading(true);
@@ -29,6 +30,7 @@ function App() {
     setErrorMessage(false);
     try {
       const response = await fetch(`/.netlify/functions/api?city=${city}`);
+
       const data = await response.json();
 
       setTimeout(() => {
@@ -44,14 +46,20 @@ function App() {
 
           let temp = (data.main.temp - 273.15) * (9 / 5) + 32;
           temp = Math.round(temp);
-          setCold(temp <= 70);
+          if (temp < 75) {
+            setCold(true);
+            setHot(false);
+          } else {
+            setCold(false);
+            setHot(true);
+          }
           setTemp(temp);
 
           let desc = data.weather[0].description;
           if (desc === "clear sky") {
             setClear(true);
             setCloudy(false);
-          } else if (desc === "few clouds" || desc === "cloudy") {
+          } else if (desc.includes("clouds") || desc === "cloudy") {
             setCloudy(true);
             setClear(false);
           } else {
@@ -79,13 +87,17 @@ function App() {
       if (city) {
         getWeather();
       }
-    }, 60000); // Fetches weather data every 60 seconds
+    }, 60000);
 
-    return () => clearInterval(interval); // Clear the interval on component unmount
-  }, [city, getWeather]); // Now includes getWeather as a dependency
+    return () => clearInterval(interval);
+  }, [city, getWeather]);
 
   return (
-    <div className={`background-image ${cold ? "cold-background" : ""}`}>
+    <div
+      className={`background-image ${cold ? "background-cold" : ""} ${
+        hot ? "background-hot" : ""
+      }`}
+    >
       <div className="content-wrapper">
         <h1 className="title">Weather App</h1>
         <div className="header">
@@ -102,7 +114,9 @@ function App() {
           </button>
         </div>
         {errorMessage && <p className="weather-info">Please Enter City</p>}
-        {loading && <OrbitProgress variant="track-disc" color="#56667e" size="small" />}
+        {loading && (
+          <OrbitProgress variant="track-disc" color="#56667e" size="small" />
+        )}
         {!loading && weather && (
           <div className={`weather-info ${animate ? "animate" : ""}`}>
             <h2>{weather.name}</h2>
@@ -115,7 +129,8 @@ function App() {
             )}
             {weather.main ? (
               <div className="temperature-container">
-                <WiThermometer size={34} color="#428ee6" />
+                {hot && <WiThermometer size={34} color="#e04b4b" />}
+                {!hot && <WiThermometer size={34} color="#428ee6" />}
                 <span>{temp}°F</span>
               </div>
             ) : (
