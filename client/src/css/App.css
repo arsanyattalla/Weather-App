@@ -91,7 +91,28 @@ html, body {
   padding: 0 20px;
   margin-bottom: auto;
 }
-
+.background-rain-day {
+  background-image: url("../images/vecteezy_rainy-on-window-copy-space-blurred-background_26182106.jpg");
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  margin-bottom: auto;
+}
+.background-rain-night {
+  background-image: url("../images/vecteezy_heavy-rain-drop-at-middle-of-the-road-surface-bokeh-background_21607449.jpg");
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  margin-bottom: auto;
+}
 
 .background-hot {
   background-image: url("../images/vecteezy_sunny-autumnal-meadow-and-yellow-forest-on-its-edges_12637243.jpg");

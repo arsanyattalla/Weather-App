@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import "../css/App.css";
 import image from "../images/clearsky.png";
 import cloud from "../images/cloudy.png";
-import { WiThermometer } from "weather-icons-react";
+import { WiThermometer, WiMoonWaxingCrescent3, WiRainMix } from "weather-icons-react";
 import { OrbitProgress } from "react-loading-indicators";
 
 function App() {
@@ -18,7 +18,8 @@ function App() {
   const [hot, setHot] = useState(false);
   const [tempMax, setTempMax] = useState(null);
   const [tempMin, setTempMin] = useState(null);
-
+  const [night, setNight] = useState(false);
+  const[rain, setRain ] = useState(false)
   const getWeather = useCallback(async () => {
     setLoading(true);
     setWeather(null);
@@ -30,9 +31,17 @@ function App() {
     }
 
     setErrorMessage(false);
+
+    const now = new Date();
+    const hour = now.getHours();
+    if (hour >= 18 || hour < 5) {
+      setNight(true);
+    } else {
+      setNight(false);
+    }
+
     try {
       const response = await fetch(`/.netlify/functions/api?city=${city}`);
-
       const data = await response.json();
       console.log(data);
       setTimeout(() => {
@@ -41,6 +50,8 @@ function App() {
           setWeather(null);
           setClear(false);
           setCloudy(false);
+          setNight(false)
+          setRain(false)
         } else if (!data.main || !data.main.temp) {
           setErrorMessage("Invalid city");
           setWeather(null);
@@ -49,8 +60,11 @@ function App() {
           setCold(false);
           setTemp(null);
           setHot(false);
+          setRain(false)
+          setNight(false)
         } else {
           setWeather(data);
+          console.log(night)
           setAnimate(true);
           setTimeout(() => setAnimate(false), 500);
 
@@ -76,10 +90,16 @@ function App() {
           if (desc === "clear sky") {
             setClear(true);
             setCloudy(false);
+            setRain(false)
           } else if (desc.includes("clouds") || desc === "cloudy") {
             setCloudy(true);
             setClear(false);
-          } else {
+            setRain(false)
+          } else if (desc.includes("rain")) {
+            setCloudy(false);
+            setClear(false);
+            setRain(true)
+          }else{
             setCloudy(false);
             setClear(false);
           }
@@ -111,9 +131,9 @@ function App() {
 
   return (
     <div
-      className={`background-image ${cold ? "background-cold" : ""} ${
-        hot || clear ? "background-hot" : ""
-      }`}
+      className={`background-image ${cold && night && !cloudy ? "background-image" : ""} ${
+        hot && clear && !cold ? "background-hot" : ""
+      } ${cold && night && cloudy ? "background-image" : ""} ${cold && night && clear ? "background-cold" : ""} ${rain && !night  ? "background-rain-day" : ""} ${rain && night  ? "background-rain-night" : ""} `}
     >
       <div className="content-wrapper">
         <h1 className="title">Weather App</h1>
@@ -139,8 +159,13 @@ function App() {
             <h2>{weather.name}</h2>
             {weather.weather && weather.weather[0] && (
               <div className="weather-content">
-                {clear && <img className="image" alt="Clear sky" src={image} />}
-                {cloudy && <img className="image" alt="Cloudy" src={cloud} />}
+                {clear && !night && <img className="image" alt="Clear sky" src={image} />}
+                {cloudy && !rain && <img className="image" alt="Cloudy" src={cloud} />}
+                {night && clear && <WiMoonWaxingCrescent3 size={30} color='#aebe16'/>}
+                {rain && <WiRainMix size={32} color='#428ee6'/>}
+
+
+                
                 <p>{weather.weather[0].description}</p>
               </div>
             )}
