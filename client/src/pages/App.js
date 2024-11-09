@@ -16,13 +16,15 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [cold, setCold] = useState(false);
   const [hot, setHot] = useState(false);
+  const [tempMax, setTempMax] = useState(null);
+  const [tempMin, setTempMin] = useState(null);
 
   const getWeather = useCallback(async () => {
     setLoading(true);
     setWeather(null);
 
     if (city === "") {
-      setErrorMessage(true);
+      setErrorMessage("Please Enter a City name");
       setLoading(false);
       return;
     }
@@ -32,13 +34,21 @@ function App() {
       const response = await fetch(`/.netlify/functions/api?city=${city}`);
 
       const data = await response.json();
-
+      console.log(data);
       setTimeout(() => {
         setLoading(false);
         if (data.error === "City is required") {
           setWeather(null);
           setClear(false);
           setCloudy(false);
+        } else if (!data.main || !data.main.temp) {
+          setErrorMessage("Invalid city");
+          setWeather(null);
+          setClear(false);
+          setCloudy(false);
+          setCold(false);
+          setTemp(null);
+          setHot(false);
         } else {
           setWeather(data);
           setAnimate(true);
@@ -54,6 +64,13 @@ function App() {
             setHot(true);
           }
           setTemp(temp);
+          let tempMax = (data.main.temp_max - 273.15) * (9 / 5) + 32;
+          let tempMin = (data.main.temp_min - 273.15) * (9 / 5) + 32;
+          tempMax = Math.round(tempMax);
+          tempMin = Math.round(tempMin);
+
+          setTempMin(tempMin);
+          setTempMax(tempMax);
 
           let desc = data.weather[0].description;
           if (desc === "clear sky") {
@@ -113,7 +130,7 @@ function App() {
             Get Weather
           </button>
         </div>
-        {errorMessage && <p className="weather-info">Please Enter City</p>}
+        {errorMessage && <p className="weather-info">{errorMessage}</p>}
         {loading && (
           <OrbitProgress variant="track-disc" color="#56667e" size="small" />
         )}
@@ -132,6 +149,16 @@ function App() {
                 {hot && <WiThermometer size={34} color="#e04b4b" />}
                 {!hot && <WiThermometer size={34} color="#428ee6" />}
                 <span>{temp}°F</span>
+              </div>
+            ) : (
+              <p>Please Enter a valid City Name</p>
+            )}
+            {weather.main ? (
+              <div className="temperature-container">
+                <WiThermometer size={34} color="#e04b4b" />
+                <span className="space">H: {tempMax}°F</span>
+                <WiThermometer size={34} color="#428ee6" />
+                <span>L: {tempMin}°F</span>
               </div>
             ) : (
               <p>Please Enter a valid City Name</p>
