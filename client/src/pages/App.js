@@ -133,8 +133,8 @@ function App() {
   return (
     <div
       className={`background-image ${cold && night && !cloudy ? "background-cold" : ""} ${
-        hot && clear && !cold ? "background-hot" : ""
-      } ${cold && night && cloudy ? "background-image" : ""} ${cold && night && clear ? "background-cold" : ""} ${rain && !night  ? "background-rain-day" : ""} ${rain && night  ? "background-rain-night" : ""} `}
+        !hot && clear && cold && !night ? "background-hot" : ""
+      } ${cold && night && cloudy ? "background-image" : ""} ${cold && night && clear ? "background-cold" : ""} ${!cold && hot && !night && clear ? "background-hot" : ""} ${rain && !night  ? "background-rain-day" : ""} ${rain && night  ? "background-rain-night" : ""} `}
     >
       <div className="content-wrapper">
         <h1 className="title">Weather App</h1>
