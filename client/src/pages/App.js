@@ -41,9 +41,8 @@ function App() {
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:5000/weather?city=${city}`
-      );
+      const response = await fetch(`/.netlify/functions/api?city=${city}`);
+
       const data = await response.json();
       console.log(data);
       setTimeout(() => {
@@ -184,9 +183,6 @@ function App() {
               <div className="temperature-container">
                 <WiThermometer size={34} color="#e04b4b" />
                 <span className="space">H: {tempMax}°F</span>
-                <span>
-                  <span></span>
-                </span>
                 <WiThermometer size={34} color="#428ee6" />
                 <span>L: {tempMin}°F</span>
               </div>
