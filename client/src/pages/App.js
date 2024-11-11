@@ -1,8 +1,12 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef  } from "react";
 import "../css/App.css";
 import image from "../images/clearsky.png";
 import cloud from "../images/cloudy.png";
-import { WiThermometer, WiMoonWaxingCrescent3, WiRainMix } from "weather-icons-react";
+import {
+  WiThermometer,
+  WiMoonWaxingCrescent3,
+  WiRainMix,
+} from "weather-icons-react";
 import { OrbitProgress } from "react-loading-indicators";
 
 function App() {
@@ -19,7 +23,24 @@ function App() {
   const [tempMax, setTempMax] = useState(null);
   const [tempMin, setTempMin] = useState(null);
   const [night, setNight] = useState(false);
-  const[rain, setRain ] = useState(false)
+  const [rain, setRain] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [triggerWeatherSearch, setTriggerWeatherSearch] = useState(false);
+
+  const searchContainerRef = useRef(null);
+
+  
+  
+  const saveInput = (data) => {
+    let savedData = JSON.parse(localStorage.getItem("inputData")) || [];
+
+    if (!savedData.includes(data)) {
+      savedData.push(data);
+      localStorage.setItem("inputData", JSON.stringify(savedData));
+      setSuggestions(savedData);
+    }
+  };
   const getWeather = useCallback(async () => {
     setLoading(true);
     setWeather(null);
@@ -39,20 +60,23 @@ function App() {
     } else {
       setNight(false);
     }
-
+    
     try {
       const response = await fetch(`/.netlify/functions/api?city=${city}`);
 
+
       const data = await response.json();
       console.log(data);
+      console.log(city);
+      console.log(suggestions);
       setTimeout(() => {
         setLoading(false);
         if (data.error === "City is required") {
           setWeather(null);
           setClear(false);
           setCloudy(false);
-          setNight(false)
-          setRain(false)
+          setNight(false);
+          setRain(false);
         } else if (!data.main || !data.main.temp) {
           setErrorMessage("Invalid city");
           setWeather(null);
@@ -61,11 +85,13 @@ function App() {
           setCold(false);
           setTemp(null);
           setHot(false);
-          setRain(false)
-          setNight(false)
+          setRain(false);
+          setNight(false);
         } else {
+          saveInput(city);
+
           setWeather(data);
-          console.log(night)
+          console.log(night);
           setAnimate(true);
           setTimeout(() => setAnimate(false), 500);
 
@@ -91,7 +117,7 @@ function App() {
           if (desc === "clear sky") {
             setClear(true);
             setCloudy(false);
-            setRain(false)
+            setRain(false);
           } else if (desc.includes("clouds") || desc === "cloudy") {
             setCloudy(true);
             setClear(false);
@@ -99,8 +125,8 @@ function App() {
           } else if (desc.includes("rain")) {
             setCloudy(false);
             setClear(false);
-            setRain(true)
-          }else{
+            setRain(true);
+          } else {
             setCloudy(false);
             setClear(false);
           }
@@ -112,14 +138,41 @@ function App() {
       setCloudy(false);
       setLoading(false);
     }
-  }, [city,night]);
+  }, [city, night, suggestions]);
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
-      getWeather();
+      setTriggerWeatherSearch(true); 
     }
   };
+  const handleInputChange = (event) => {
+    const input = event.target.value;
+    setCity(input);
+    setTriggerWeatherSearch(false); 
 
+    if (input) {
+      const savedData = JSON.parse(localStorage.getItem("inputData")) || [];
+      const filteredSuggestions = savedData.filter((suggestion) =>
+        suggestion.toLowerCase().startsWith(input.toLowerCase())
+      );
+      setSuggestions(filteredSuggestions);
+    } else {
+      setSuggestions(JSON.parse(localStorage.getItem("inputData")) || []);
+    }
+  
+    setShowSuggestions(true);
+  };
+  const handleClickOutside = (event) => {
+    if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+      setShowSuggestions(false);
+    }
+  };
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   useEffect(() => {
     const interval = setInterval(() => {
       if (city) {
@@ -130,43 +183,84 @@ function App() {
     return () => clearInterval(interval);
   }, [city, getWeather]);
 
+  useEffect(() => {
+    if (triggerWeatherSearch && city) {
+      getWeather();
+      setTriggerWeatherSearch(false); 
+    }
+  }, [triggerWeatherSearch, city, getWeather]);
+  
+  const handleSuggestionClick = (suggestion) => {
+    setCity(suggestion);
+    setShowSuggestions(false);
+    setTriggerWeatherSearch(true); 
+
+  };
   return (
     <div
-      className={`background-image ${cold && night && !cloudy ? "background-cold" : ""} ${
-        !hot && clear && cold && !night ? "background-hot" : ""
-      } ${cold && night && cloudy ? "background-image" : ""} ${cold && night && clear ? "background-cold" : ""} ${!cold && hot && !night && clear ? "background-hot" : ""} ${rain && !night  ? "background-rain-day" : ""} ${rain && night  ? "background-rain-night" : ""} `}
+      className={`background-image ${
+        cold && night && !cloudy ? "background-cold" : ""
+      } ${!hot && clear && cold && !night ? "background-hot" : ""} ${
+        cold && night && cloudy ? "background-image" : ""
+      } ${cold && night && clear ? "background-cold" : ""} ${
+        !cold && hot && !night && clear ? "background-hot" : ""
+      } ${rain && !night ? "background-rain-day" : ""} ${
+        rain && night ? "background-rain-night" : ""
+      } `}
     >
       <div className="content-wrapper">
         <h1 className="title">Weather App</h1>
         <div className="header">
-          <input
-            type="text"
-            value={city}
-            onKeyDown={handleKeyDown}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder="Enter city"
-            className="city-input"
-          />
-          <button onClick={getWeather} className="weather-button">
-            Get Weather
-          </button>
+        <div ref={searchContainerRef} className="search-container">
+            <input
+              type="text"
+              value={city}
+              onKeyDown={handleKeyDown}
+              onChange={handleInputChange}
+              placeholder="Enter city"
+              className="city-input"
+            />
+
+            {suggestions.length > 0 && showSuggestions && (
+              <div className="suggestions-dropdown">
+                {suggestions.map((suggestion, index) => (
+                  <div
+                    key={index}
+                    className="suggestion-item"
+                    onClick={() => handleSuggestionClick(suggestion)}
+                  >
+                    {suggestion}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
+        {!loading && 
+        <button onClick={getWeather} className="weather-button">
+          Get Weather
+        </button>
+}
         {errorMessage && <p className="weather-info">{errorMessage}</p>}
         {loading && (
-          <OrbitProgress variant="track-disc" color="#56667e" size="small" />
+          <OrbitProgress variant="track-disc" color="#56667e"  />
         )}
         {!loading && weather && (
           <div className={`weather-info ${animate ? "animate" : ""}`}>
             <h2>{weather.name}</h2>
             {weather.weather && weather.weather[0] && (
               <div className="weather-content">
-                {clear && !night && <img className="image" alt="Clear sky" src={image} />}
-                {cloudy && !rain && <img className="image" alt="Cloudy" src={cloud} />}
-                {night && clear && <WiMoonWaxingCrescent3 size={30} color='#aebe16'/>}
-                {rain && <WiRainMix size={32} color='#428ee6'/>}
+                {clear && !night && (
+                  <img className="image" alt="Clear sky" src={image} />
+                )}
+                {cloudy && !rain && (
+                  <img className="image" alt="Cloudy" src={cloud} />
+                )}
+                {night && clear && (
+                  <WiMoonWaxingCrescent3 size={30} color="#aebe16" />
+                )}
+                {rain && <WiRainMix size={32} color="#428ee6" />}
 
-
-                
                 <p>{weather.weather[0].description}</p>
               </div>
             )}
