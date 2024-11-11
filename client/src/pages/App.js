@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import "../css/App.css";
 import image from "../images/clearsky.png";
 import cloud from "../images/cloudy.png";
@@ -19,7 +19,59 @@ function App() {
   const [tempMax, setTempMax] = useState(null);
   const [tempMin, setTempMin] = useState(null);
   const [night, setNight] = useState(false);
-  const[rain, setRain ] = useState(false)
+  const [rain, setRain] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = useRef(null);
+
+  function saveInput(cityName) {
+    localStorage.clear()
+    let savedData = JSON.parse(localStorage.getItem("inputData")) || [];
+    
+    if (!savedData.some(savedCity => savedCity.toLowerCase() === cityName.toLowerCase())) {
+      savedData.push(cityName);
+      localStorage.setItem("inputData", JSON.stringify(savedData));
+    }
+  }
+
+  useEffect(() => {
+    const savedSuggestions = JSON.parse(localStorage.getItem("inputData")) || [];
+    setSuggestions(savedSuggestions);
+  }, []);
+
+  const handleInputChange = (event) => {
+    const input = event.target.value;
+    setCity(input);
+    setFilteredSuggestions(
+      suggestions.filter((suggestion) =>
+        suggestion.toLowerCase().startsWith(input.toLowerCase())
+      )
+    );
+    setShowSuggestions(true);
+  };
+
+  const handleFocus = () => {
+    setFilteredSuggestions(suggestions);
+    setShowSuggestions(true);
+  };
+
+  const selectSuggestion = (suggestion) => {
+    setCity(suggestion);
+    setShowSuggestions(false); // Hide suggestions after selection
+  };
+
+  const handleClickOutside = (event) => {
+    if (inputRef.current && !inputRef.current.contains(event.target)) {
+      setShowSuggestions(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const getWeather = useCallback(async () => {
     setLoading(true);
     setWeather(null);
@@ -30,29 +82,25 @@ function App() {
       return;
     }
 
+    saveInput(city);
     setErrorMessage(false);
 
     const now = new Date();
     const hour = now.getHours();
-    if (hour >= 18 || hour < 5) {
-      setNight(true);
-    } else {
-      setNight(false);
-    }
+    setNight(hour >= 18 || hour < 5);
 
     try {
-      const response = await fetch(`/.netlify/functions/api?city=${city}`);
-
+      const response = await fetch(`http://localhost:5000/weather?city=${city}`);
       const data = await response.json();
-      console.log(data);
+
       setTimeout(() => {
         setLoading(false);
         if (data.error === "City is required") {
           setWeather(null);
           setClear(false);
           setCloudy(false);
-          setNight(false)
-          setRain(false)
+          setNight(false);
+          setRain(false);
         } else if (!data.main || !data.main.temp) {
           setErrorMessage("Invalid city");
           setWeather(null);
@@ -61,49 +109,28 @@ function App() {
           setCold(false);
           setTemp(null);
           setHot(false);
-          setRain(false)
-          setNight(false)
+          setRain(false);
+          setNight(false);
         } else {
           setWeather(data);
-          console.log(night)
           setAnimate(true);
           setTimeout(() => setAnimate(false), 500);
 
           let temp = (data.main.temp - 273.15) * (9 / 5) + 32;
           temp = Math.round(temp);
-          if (temp < 75) {
-            setCold(true);
-            setHot(false);
-          } else {
-            setCold(false);
-            setHot(true);
-          }
+          setCold(temp < 75);
+          setHot(temp >= 75);
           setTemp(temp);
+
           let tempMax = (data.main.temp_max - 273.15) * (9 / 5) + 32;
           let tempMin = (data.main.temp_min - 273.15) * (9 / 5) + 32;
-          tempMax = Math.round(tempMax);
-          tempMin = Math.round(tempMin);
+          setTempMax(Math.round(tempMax));
+          setTempMin(Math.round(tempMin));
 
-          setTempMin(tempMin);
-          setTempMax(tempMax);
-
-          let desc = data.weather[0].description;
-          if (desc === "clear sky") {
-            setClear(true);
-            setCloudy(false);
-            setRain(false)
-          } else if (desc.includes("clouds") || desc === "cloudy") {
-            setCloudy(true);
-            setClear(false);
-            setRain(false);
-          } else if (desc.includes("rain")) {
-            setCloudy(false);
-            setClear(false);
-            setRain(true)
-          }else{
-            setCloudy(false);
-            setClear(false);
-          }
+          const desc = data.weather[0].description;
+          setClear(desc === "clear sky");
+          setCloudy(desc.includes("clouds") || desc === "cloudy");
+          setRain(desc.includes("rain"));
         }
       }, 1000);
     } catch (error) {
@@ -112,7 +139,7 @@ function App() {
       setCloudy(false);
       setLoading(false);
     }
-  }, [city,night]);
+  }, [city]);
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -125,7 +152,7 @@ function App() {
       if (city) {
         getWeather();
       }
-    }, 60000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [city, getWeather]);
@@ -134,27 +161,40 @@ function App() {
     <div
       className={`background-image ${cold && night && !cloudy ? "background-cold" : ""} ${
         !hot && clear && cold && !night ? "background-hot" : ""
-      } ${cold && night && cloudy ? "background-image" : ""} ${cold && night && clear ? "background-cold" : ""} ${!cold && hot && !night && clear ? "background-hot" : ""} ${rain && !night  ? "background-rain-day" : ""} ${rain && night  ? "background-rain-night" : ""} `}
+      } ${cold && night && cloudy ? "background-image" : ""} ${cold && night && clear ? "background-cold" : ""} ${!cold && hot && !night && clear ? "background-hot" : ""} ${rain && !night ? "background-rain-day" : ""} ${rain && night ? "background-rain-night" : ""} `}
     >
       <div className="content-wrapper">
         <h1 className="title">Weather App</h1>
-        <div className="header">
+        <div className="header" ref={inputRef}>
           <input
             type="text"
             value={city}
             onKeyDown={handleKeyDown}
-            onChange={(e) => setCity(e.target.value)}
+            onChange={handleInputChange}
+            onFocus={handleFocus}
             placeholder="Enter city"
             className="city-input"
           />
+          {showSuggestions && (
+            <div className="suggestions-dropdown">
+              {filteredSuggestions.map((suggestion, index) => (
+                <div
+                  key={index}
+                  className="suggestion-item"
+                  onClick={() => selectSuggestion(suggestion)}
+                >
+                  {suggestion}
+                </div>
+              ))}
+            </div>
+          )}
           <button onClick={getWeather} className="weather-button">
             Get Weather
           </button>
+          
         </div>
         {errorMessage && <p className="weather-info">{errorMessage}</p>}
-        {loading && (
-          <OrbitProgress variant="track-disc" color="#56667e" size="small" />
-        )}
+        {loading && <OrbitProgress variant="track-disc" color="#56667e" size="small" />}
         {!loading && weather && (
           <div className={`weather-info ${animate ? "animate" : ""}`}>
             <h2>{weather.name}</h2>
@@ -162,11 +202,8 @@ function App() {
               <div className="weather-content">
                 {clear && !night && <img className="image" alt="Clear sky" src={image} />}
                 {cloudy && !rain && <img className="image" alt="Cloudy" src={cloud} />}
-                {night && clear && <WiMoonWaxingCrescent3 size={30} color='#aebe16'/>}
-                {rain && <WiRainMix size={32} color='#428ee6'/>}
-
-
-                
+                {night && clear && <WiMoonWaxingCrescent3 size={30} color="#aebe16" />}
+                {rain && <WiRainMix size={32} color="#428ee6" />}
                 <p>{weather.weather[0].description}</p>
               </div>
             )}
