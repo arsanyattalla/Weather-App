@@ -62,9 +62,8 @@ function App() {
     }
     
     try {
-      const response = await fetch(
-        `http://localhost:5000/weather?city=${city}`
-      );
+        const response = await fetch(`/.netlify/functions/api?city=${city}`);
+      
 
       const data = await response.json();
       console.log(data);
