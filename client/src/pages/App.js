@@ -215,18 +215,14 @@ function App() {
     const height = canvas.height;
   
     const animateCircles = () => {
-      ctx.clearRect(0, 0, width, height); 
+      ctx.clearRect(0, 0, width, height); // Clear the canvas
   
-      
-      
-      
       ctx.font = "48px Arial";
-      ctx.fillStyle = "white"; 
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("Weather App", width / 2, height / 2); 
+      ctx.fillStyle = "white"; // Text color
+     
+      ctx.fillText("Weather App", width / 2, height / 2); // Center the text
   
-      requestAnimationFrame(animateCircles); 
+      requestAnimationFrame(animateCircles); // Continue the animation
     };
   
     animateCircles();
