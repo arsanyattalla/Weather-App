@@ -282,7 +282,7 @@ function App() {
         className={`background-image ${cold && night && !cloudy ? "background-cold" : ""} ${!hot && clear && cold && !night ? "background-hot" : ""} ${cold && night && cloudy ? "background-image" : ""} ${cold && night && clear ? "background-cold" : ""} ${!cold && hot && !night && clear ? "background-hot" : ""} ${rain && !night ? "background-rain-day" : ""} ${rain && night ? "background-rain-night" : ""}`}
       >
         <div className="content-wrapper">
-          <h1 className="title">Weather App</h1>
+          <h1 className="title">Weather</h1>
           <div className="header">
             <div ref={searchContainerRef} className="search-container">
               <input
@@ -293,6 +293,11 @@ function App() {
                 placeholder="Enter city"
                 className="city-input"
               />
+              {!loading && (
+            <button onClick={getWeather} className="weather-button">
+              <img className='weather-img' src='https://www.svgrepo.com/show/7109/search.svg'></img>
+            </button>
+          )}
               {suggestions.length > 0 && showSuggestions && (
                 <div className="suggestions-dropdown">
                   {suggestions.map((suggestion, index) => (
@@ -308,11 +313,7 @@ function App() {
               )}
             </div>
           </div>
-          {!loading && (
-            <button onClick={getWeather} className="weather-button">
-              Get Weather
-            </button>
-          )}
+          
           {errorMessage && <p className="weather-info">{errorMessage}</p>}
           {loading && <OrbitProgress variant="track-disc" color="#56667e" />}
           {!loading && weather && (
