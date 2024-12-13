@@ -234,13 +234,13 @@ function App() {
   
   
   useEffect(() => {
+    const canvas = canvasRef.current; // Store the canvas reference
     if (showCanvas) {
       drawCanvas(); // Start animation when canvas is shown
     }
   
     return () => {
       // Cleanup canvas animation when component unmounts or showCanvas is false
-      const canvas = canvasRef.current;
       if (canvas) {
         const ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
