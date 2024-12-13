@@ -64,6 +64,7 @@ function App() {
     
     try {
       const response = await fetch(`/.netlify/functions/api?city=${city}`);
+      //const response = await fetch(`http://localhost:5000/weather?city=${city}`);
 
       const data = await response.json();
       console.log(data);
@@ -195,7 +196,7 @@ function App() {
   }, [triggerWeatherSearch, city, getWeather]);
 
   useEffect(() => {
-    // Start fading out canvas after 3 seconds
+    
     setTimeout(() => {
       setShowCanvas(false);
     }, 3000); 
@@ -215,13 +216,13 @@ function App() {
     const height = canvas.height;
   
     const animateCircles = () => {
-      ctx.clearRect(0, 0, width, height); // Clear the canvas
+      ctx.clearRect(0, 0, width, height); 
   
      
      
-      ctx.fillText("Weather App", width / 2, height / 2); // Center the text
+      ctx.fillText("Weather App", width / 2, height / 2); 
   
-      requestAnimationFrame(animateCircles); // Continue the animation
+      requestAnimationFrame(animateCircles); 
     };
   
     animateCircles();
@@ -229,16 +230,16 @@ function App() {
   
   
   useEffect(() => {
-    const canvas = canvasRef.current; // Store the canvas reference
+    const canvas = canvasRef.current; 
     if (showCanvas) {
-      drawCanvas(); // Start animation when canvas is shown
+      drawCanvas(); 
     }
   
     return () => {
-      // Cleanup canvas animation when component unmounts or showCanvas is false
+      
       if (canvas) {
         const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height); 
       }
     };
   }, [showCanvas]);
@@ -246,31 +247,31 @@ function App() {
     const updateCanvasSize = () => {
       const canvas = canvasRef.current;
       if (canvas) {
-        // Set canvas width and height to match the window size
+        
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
       }
     };
 
-    // Update canvas size on mount
+    
     updateCanvasSize();
 
-    // Add event listener for window resize
+    
     window.addEventListener("resize", updateCanvasSize);
 
-    // Clean up event listener on unmount
+    
     return () => {
       window.removeEventListener("resize", updateCanvasSize);
     };
   }, []);
   return (
     <>
-      {/* Full Screen Canvas Animation */}
+      {}
       {showCanvas && (
         <div>
-          {/* Canvas background */}
+          {}
           <canvas ref={canvasRef} className="canvas-animation" />
-          {/* Centered text */}
+          {}
           <div className="canvas-text">Weather App</div>
         </div>
       )}
@@ -316,7 +317,11 @@ function App() {
           
           {errorMessage && <p className="weather-info">{errorMessage}</p>}
           {loading && <OrbitProgress variant="track-disc" color="#56667e" />}
-          {!loading && weather && (
+          
+        
+      </div>
+      <div className="weather-i">
+      {!loading && weather && (
             <div className={`weather-info ${animate ? "animate" : ""}`}>
               <h2>{weather.name}</h2>
               {weather.weather && weather.weather[0] && (
@@ -354,7 +359,7 @@ function App() {
             </div>
           )}
         </div>
-      </div>
+        </div>
       )}
     </>
   );
