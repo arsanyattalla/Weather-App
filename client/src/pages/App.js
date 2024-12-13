@@ -295,7 +295,7 @@ function App() {
               />
               {!loading && (
             <button onClick={getWeather} className="weather-button">
-              <img className='weather-img' src='https://www.svgrepo.com/show/7109/search.svg'></img>
+              <img alt='weather-img'className='weather-img' src='https://www.svgrepo.com/show/7109/search.svg'></img>
             </button>
           )}
               {suggestions.length > 0 && showSuggestions && (
