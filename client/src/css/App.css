@@ -43,19 +43,29 @@ html, body {
   background-color: #000000;
   text-align: center;
 }
+/* Full screen canvas centered */
 .canvas-animation {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 10;
-  opacity: 1;
-  transition: opacity 2s ease-out;
-  background-color: black;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: black; /* Optional: add background color */
 }
 
-.canvas-animation.fade-out {
-  opacity: 0;
+/* Use flexbox to center the text */
+.canvas-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
 }
+
 
 
 .suggestion-item:hover {

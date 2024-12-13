@@ -217,8 +217,7 @@ function App() {
     const animateCircles = () => {
       ctx.clearRect(0, 0, width, height); // Clear the canvas
   
-      ctx.font = "48px Arial";
-      ctx.fillStyle = "white"; // Text color
+     
      
       ctx.fillText("Weather App", width / 2, height / 2); // Center the text
   
@@ -268,11 +267,12 @@ function App() {
     <>
       {/* Full Screen Canvas Animation */}
       {showCanvas && (
-       <canvas
-       ref={canvasRef}
-       className="canvas-animation"
-       style={{ display: "block", position: "absolute", top: 0, left: 0 }}
-     />
+        <div>
+          {/* Canvas background */}
+          <canvas ref={canvasRef} className="canvas-animation" />
+          {/* Centered text */}
+          <div className="canvas-text">Weather App</div>
+        </div>
       )}
 
       {!showCanvas && (
