@@ -92,6 +92,18 @@ body {
   margin-bottom: auto;
   flex-direction: column;
 }
+.background-cloudy {
+  background-image: url("https://media1.tenor.com/m/CMVagqkcsZwAAAAd/moving-clouds-world-meteorological-day.gif");
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  margin-bottom: auto;
+  flex-direction: column;
+}
 
 .background-cold {
   background-image: url("../images/vecteezy_ai-generated-beautifully-illuminated-bridge-at-night-with_37981764.jpg");
@@ -106,7 +118,7 @@ body {
 }
 
 .background-rain-day {
-  background-image: url("../images/vecteezy_rainy-on-window-copy-space-blurred-background_26182106.jpg");
+  background-image: url("https://media1.tenor.com/m/jkLAsKSFuwsAAAAd/rain-anime-castabide.gif");
   background-size: cover;
   background-position: center;
   height: 100vh;
@@ -118,7 +130,7 @@ body {
 }
 
 .background-rain-night {
-  background-image: url("../images/vecteezy_heavy-rain-drop-at-middle-of-the-road-surface-bokeh-background_21607449.jpg");
+  background-image: url("https://media1.tenor.com/m/jkLAsKSFuwsAAAAd/rain-anime-castabide.gif");
   background-size: cover;
   background-position: center;
   height: 100vh;
