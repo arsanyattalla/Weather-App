@@ -332,8 +332,8 @@ function App() {
                   {cloudy && !rain && (
                     <img className="image" alt="Cloudy" src={cloud} />
                   )}
-                  {night && clear && <WiMoonWaxingCrescent3 size={30} color="#aebe16" />}
-                  {rain && <WiRainMix size={32} color="#428ee6" />}
+                  {night && clear && <WiMoonWaxingCrescent3 className='image' color="#aebe16" />}
+                  {rain && <WiRainMix className='image' size={32} color="#428ee6" />}
                   <p>{weather.weather[0].description}</p>
                 </div>
               )}
@@ -341,7 +341,7 @@ function App() {
                 <div className="temperature-container">
                   {hot && <WiThermometer size={34} color="#e04b4b" />}
                   {!hot && <WiThermometer size={34} color="#428ee6" />}
-                  <span>{temp}°F</span>
+                  <span className="temp">{temp}°F</span>
                 </div>
               ) : (
                 <p>Please Enter a valid City Name</p>
@@ -351,7 +351,7 @@ function App() {
                   <WiThermometer size={34} color="#e04b4b" />
                   <span className="space">H: {tempMax}°F</span>
                   <WiThermometer size={34} color="#428ee6" />
-                  <span>L: {tempMin}°F</span>
+                  <span className="temp1">L: {tempMin}°F</span>
                 </div>
               ) : (
                 <p>Please Enter a valid City Name</p>

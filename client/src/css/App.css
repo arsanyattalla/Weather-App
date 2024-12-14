@@ -291,6 +291,7 @@ body {
 }
 .space {
   margin-right: 65px;
+  font-size: large;
 }
 
 .image {
@@ -299,5 +300,29 @@ body {
   margin-top: -10px;
   border-radius: 50%;
   object-fit: cover;
+  animation: float 3s ease-in-out infinite;
   transition: transform 0.3s ease-in-out;
+  size: 10px;
+}
+.temp{
+  font-size: larger;
+}
+.temp1{
+  font-size: large;
+
+}
+.image:hover {
+  transform: scale(1.5) rotate(10deg);
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
