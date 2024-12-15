@@ -264,6 +264,34 @@ function App() {
       window.removeEventListener("resize", updateCanvasSize);
     };
   }, []);
+
+
+  const handleUseMyLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const { latitude, longitude } = position.coords;
+        const apiKey = "30d4741c779ba94c470ca1f63045390a"; // Replace with your actual reverse geocoding API key
+        const reverseGeocodeURL = `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${apiKey}`;
+
+        try {
+          const response = await fetch(reverseGeocodeURL);
+          const data = await response.json();
+          if (data.length > 0 && data[0].name) {
+            const currentCity = data[0].name;
+            setCity(currentCity);
+            setTriggerWeatherSearch(true);
+          } else {
+            setErrorMessage("Unable to fetch location");
+          }
+        } catch (error) {
+          console.error("Error fetching location data:", error);
+          setErrorMessage("Error fetching location");
+        }
+      });
+    } else {
+      setErrorMessage("Geolocation is not supported by your browser");
+    }
+  };
   return (
     <>
       {}
@@ -295,9 +323,12 @@ function App() {
                 className="city-input"
               />
               {!loading && (
+                <>
             <button onClick={getWeather} className="weather-button">
               <img alt='weather-img'className='weather-img' src='https://www.svgrepo.com/show/7109/search.svg'></img>
             </button>
+                      <href className="location" onClick={handleUseMyLocation}>Use My Location</href>
+</>
           )}
               {suggestions.length > 0 && showSuggestions && (
                 <div className="suggestions-dropdown">

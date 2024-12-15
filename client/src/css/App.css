@@ -50,6 +50,15 @@ body {
   display: block;
   background: black;
 }
+.location{
+  padding: 7px;
+  border-radius: 10%;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.location:hover{
+  transform: scale(1.05);
+}
 
 .canvas-text {
   position: absolute;
@@ -255,7 +264,6 @@ body {
   display: inline-block;
   text-align: left;
   transition: transform 0.5s ease, opacity 0.5s ease;
-  opacity: 1;
   flex-direction: column;
   font-size: 20px;
 }
