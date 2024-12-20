@@ -11,23 +11,22 @@ import { OrbitProgress } from "react-loading-indicators";
 
 function App() {
   const [city, setCity] = useState("");
-  const [weather, setWeather] = useState(null);
+  const [weather, setWeather] = useState([]);
   const [clear, setClear] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
-  const [temp, setTemp] = useState(null);
   const [cloudy, setCloudy] = useState(false);
   const [animate, setAnimate] = useState(false);
   const [loading, setLoading] = useState(false);
   const [cold, setCold] = useState(false);
   const [hot, setHot] = useState(false);
-  const [tempMax, setTempMax] = useState(null);
-  const [tempMin, setTempMin] = useState(null);
+ 
   const [night, setNight] = useState(false);
   const [rain, setRain] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [triggerWeatherSearch, setTriggerWeatherSearch] = useState(false);
-  const [showCanvas, setShowCanvas] = useState(true); // State for showing canvas animation
+  const [showCanvas, setShowCanvas] = useState(true); 
+  const [slideLeft, setSlideLeft] = useState(false);
 
   const canvasRef = useRef(null);
   const searchContainerRef = useRef(null);
@@ -42,13 +41,18 @@ function App() {
     }
   };
 
-  const getWeather = useCallback(async () => {
-    setLoading(true);
-    setWeather(null);
 
+
+  
+
+  const getWeather = useCallback(async (city) => {
+    setWeather((prevWeather) => [...prevWeather]); 
+   
     if (city === "") {
       setErrorMessage("Please Enter a City name");
       setLoading(false);
+      setWeather((prevWeather) => [...prevWeather]); 
+
       return;
     }
 
@@ -63,36 +67,42 @@ function App() {
     }
     
     try {
-      const response = await fetch(`/.netlify/functions/api?city=${city}`);
-      //const response = await fetch(`http://localhost:5000/weather?city=${city}`);
+      //const response = await fetch(`/.netlify/functions/api?city=${city}`);
+      const response = await fetch(`http://localhost:5000/weather?city=${city}`);
 
       const data = await response.json();
       console.log(data);
       console.log(city);
       console.log(suggestions);
+      setLoading(true);
+
       setTimeout(() => {
         setLoading(false);
         if (data.error === "City is required") {
-          setWeather(null);
+          setWeather((prevWeather) => [...prevWeather]); 
           setClear(false);
           setCloudy(false);
           setNight(false);
           setRain(false);
         } else if (!data.main || !data.main.temp) {
           setErrorMessage("Invalid city");
-          setWeather(null);
+          setWeather((prevWeather) => [...prevWeather]); 
           setClear(false);
           setCloudy(false);
           setCold(false);
-          setTemp(null);
           setHot(false);
           setRain(false);
           setNight(false);
         } else {
           saveInput(city);
 
-          setWeather(data);
-          console.log(night);
+          setWeather((prevWeather) => {
+            if (prevWeather.some((weatherItem) => weatherItem.name.toLowerCase() === city.toLowerCase() || weatherItem.name.toLowerCase().includes(city.toLowerCase()) || city.toLowerCase().includes(weatherItem.name.toLowerCase()) )) {
+              return prevWeather;
+            }
+            return [...prevWeather, data];
+          }); 
+                   console.log(night);
           setAnimate(true);
           setTimeout(() => setAnimate(false), 500);
 
@@ -105,14 +115,7 @@ function App() {
             setCold(false);
             setHot(true);
           }
-          setTemp(temp);
-          let tempMax = (data.main.temp_max - 273.15) * (9 / 5) + 32;
-          let tempMin = (data.main.temp_min - 273.15) * (9 / 5) + 32;
-          tempMax = Math.round(tempMax);
-          tempMin = Math.round(tempMin);
-
-          setTempMin(tempMin);
-          setTempMax(tempMax);
+     
 
           let desc = data.weather[0].description;
           if (desc === "clear sky") {
@@ -131,6 +134,7 @@ function App() {
             setCloudy(false);
             setClear(false);
           }
+        
         }
       }, 1000);
     } catch (error) {
@@ -139,11 +143,12 @@ function App() {
       setCloudy(false);
       setLoading(false);
     }
-  }, [city, night, suggestions]);
+  }, [ night, suggestions]);
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       setTriggerWeatherSearch(true); 
+      setShowSuggestions(false)
     }
   };
 
@@ -154,9 +159,11 @@ function App() {
 
     if (input) {
       const savedData = JSON.parse(localStorage.getItem("inputData")) || [];
-      const filteredSuggestions = savedData.filter((suggestion) =>
-        suggestion.toLowerCase().startsWith(input.toLowerCase())
+      console.log(savedData)
+      const filteredSuggestions = suggestions.filter(suggestion => 
+        suggestion && typeof suggestion === 'string' && suggestion.toLowerCase().includes(input.toLowerCase())
       );
+    
       setSuggestions(filteredSuggestions);
     } else {
       setSuggestions(JSON.parse(localStorage.getItem("inputData")) || []);
@@ -181,19 +188,44 @@ function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       if (city) {
-        getWeather();
+        getWeather(city);
       }
     }, 60000);
 
     return () => clearInterval(interval);
   }, [city, getWeather]);
+/* eslint-disable react-hooks/exhaustive-deps */
 
   useEffect(() => {
     if (triggerWeatherSearch && city) {
-      getWeather();
+      getWeather(city);
       setTriggerWeatherSearch(false); 
     }
-  }, [triggerWeatherSearch, city, getWeather]);
+  }, [triggerWeatherSearch, getWeather]);
+  /* eslint-enable react-hooks/exhaustive-deps */
+
+/* eslint-disable react-hooks/exhaustive-deps */
+
+  useEffect(() => {
+    let cities = ['Los Angeles', 'Cairo', 'New York'];
+  
+    const fetchWeatherWithAnimation = async (city) => {
+    
+      setSlideLeft(true); // Start the animation
+      setTimeout(() => {
+        setSlideLeft(false); // Reset after animation
+        getWeather(city);
+      }, 500); // Match this duration to the CSS animation
+    };
+    for(let city of cities){
+      
+    fetchWeatherWithAnimation(city)
+ 
+    }
+ 
+},[]);
+/* eslint-enable react-hooks/exhaustive-deps */
+
 
   useEffect(() => {
     
@@ -308,12 +340,12 @@ function App() {
 
       
       <div
-        className={`background-image ${cold && night && !cloudy ? "background-cold" : ""} ${!hot && clear && cold && !night ? "background-hot" : ""} ${cold && night && cloudy ? "background-cloudy" : ""} ${cold && night && clear ? "background-cold" : ""} ${!cold && hot && !night && clear ? "background-hot" : ""} ${rain && !night ? "background-rain-day" : ""} ${rain && night ? "background-rain-night" : ""}`}
+        className={`background-image ${cold && night && !cloudy && weather.length===1 ? "background-cold" : ""} ${!hot && clear && cold && !night && weather.length===1 ? "background-hot" : ""} ${cold && night && cloudy && weather.length===1 ? "background-cloudy" : ""} ${cold && night && clear && weather.length===1 ? "background-cold" : ""} ${!cold && hot && !night && clear && weather.length===1 ? "background-hot" : ""} ${rain && !night ? "background-rain-day" : ""} ${rain && night && weather.length===1 ? "background-rain-night" : ""}`}
       >
         <div className="content-wrapper">
           <h1 className="title">Weather</h1>
           <div className="header">
-            <div ref={searchContainerRef} className="search-container">
+            <div  className="search-container">
               <input
                 type="text"
                 value={city}
@@ -324,16 +356,16 @@ function App() {
               />
               {!loading && (
                 <>
-            <button onClick={getWeather} className="weather-button">
+            <button onClick={()=>getWeather(city)} className="weather-button">
               <img alt='weather-img'className='weather-img' src='https://www.svgrepo.com/show/7109/search.svg'></img>
             </button>
                       <href className="location" onClick={handleUseMyLocation}>Use My Location</href>
 </>
           )}
               {suggestions.length > 0 && showSuggestions && (
-                <div className="suggestions-dropdown">
+                <div className="suggestions-dropdown" ref={searchContainerRef}>
                   {suggestions.map((suggestion, index) => (
-                    <div
+                    <div 
                       key={index}
                       className="suggestion-item"
                       onClick={() => handleSuggestionClick(suggestion)}
@@ -351,45 +383,79 @@ function App() {
           
         
       </div>
-      <div className="weather-i">
-      {!loading && weather && (
-            <div className={`weather-info ${animate ? "animate" : ""}`}>
-              <h2>{weather.name}</h2>
-              {weather.weather && weather.weather[0] && (
-                <div className="weather-content">
-                  {clear && !night && (
-                    <img className="image" alt="Clear sky" src={image} />
-                  )}
-                  {cloudy && !rain && (
-                    <img className="image" alt="Cloudy" src={cloud} />
-                  )}
-                  {night && clear && <WiMoonWaxingCrescent3 className='image' color="#aebe16" />}
-                  {rain && <WiRainMix className='image' size={32} color="#428ee6" />}
-                  <p>{weather.weather[0].description}</p>
-                </div>
-              )}
-              {weather.main ? (
-                <div className="temperature-container">
-                  {hot && <WiThermometer size={34} color="#e04b4b" />}
-                  {!hot && <WiThermometer size={34} color="#428ee6" />}
-                  <span className="temp">{temp}°F</span>
-                </div>
-              ) : (
-                <p>Please Enter a valid City Name</p>
-              )}
-              {weather.main ? (
-                <div className="temperature-container">
-                  <WiThermometer size={34} color="#e04b4b" />
-                  <span className="space">H: {tempMax}°F</span>
-                  <WiThermometer size={34} color="#428ee6" />
-                  <span className="temp1">L: {tempMin}°F</span>
-                </div>
-              ) : (
-                <p>Please Enter a valid City Name</p>
-              )}
+      <div className={`weather-i  ${slideLeft ? "slide-left" : ""}`}>
+  {!loading && weather && (
+    weather.slice().reverse().map((weathers, index) => {
+      // Declare and assign variables before returning JSX
+      let tempMax = (weathers.main.temp_max - 273.15) * (9 / 5) + 32;
+      let tempMin = (weathers.main.temp_min - 273.15) * (9 / 5) + 32;
+      tempMax = Math.round(tempMax);
+      tempMin = Math.round(tempMin);
+      
+      let temp = (weathers.main.temp - 273.15) * (9 / 5) + 32;
+      temp = Math.round(temp);
+      const desc = weathers.weather[0]?.description || "";
+      const isClear = desc === "clear sky";
+      const isCloudy = desc.includes("clouds") || desc === "cloudy" || desc === "haze";
+      const isRain = desc.includes("rain");
+      const time = new Date().getHours()
+      const isNight = time >= 17
+      const isSnow = desc.includes("snow") 
+  
+      
+      return (
+        <div className={`weather-info
+    ${isClear && isNight && !isCloudy && !isRain ? "cold" : ""} 
+    ${ isClear && !isNight ? "hot" : ""} 
+    ${isCloudy ? "cloudy" : ""} 
+    ${isSnow && !cloudy && !isRain && !isClear ? "snow": ""}
+    
+    ${rain ? "rain-night" : ""} 
+    
+   ${animate ? "animate" : ""}`} key={index}>
+          <h2>{weathers.name}</h2>
+          {weathers.weather && weathers.weather[0] && (
+          <div className="weather-content">
+            {isClear && !isNight && (
+              <img className="image" alt="Clear sky" src={image} />
+            )}
+            {isCloudy && !isRain && (
+              <img className="image" alt="Cloudy" src={cloud} />
+            )}
+            {isNight && isClear && (
+              <WiMoonWaxingCrescent3 className="image" color="#aebe16" />
+            )}
+            {isRain && (
+              <WiRainMix className="image" size={32} color="#428ee6" />
+            )}
+            <p>{weathers.weather[0].description}</p>
+          </div>
+        )}
+          {weathers.main ? (
+            <div className="temperature-container">
+              {hot && <WiThermometer size={34} color="#e04b4b" />}
+              {!hot && <WiThermometer size={34} color="#428ee6" />}
+              <span className="temp">{temp}°F</span>
             </div>
+          ) : (
+            <p>Please Enter a valid City Name</p>
+          )}
+          {weathers.main ? (
+            <div className="temperature-container">
+              <WiThermometer size={34} color="#e04b4b" />
+              <span className="space">H: {tempMax}°F</span>
+              <WiThermometer size={34} color="#428ee6" />
+              <span className="temp1">L: {tempMin}°F</span>
+            </div>
+          ) : (
+            <p>Please Enter a valid City Name</p>
           )}
         </div>
+      );
+    })
+  )}
+</div>
+
         </div>
       )}
     </>
