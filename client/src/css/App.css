@@ -171,7 +171,6 @@ html {
 }
 .head {
   display: flex;
-  gap: 150px;
 }
 .x-button {
   background-color: transparent;
@@ -183,7 +182,8 @@ html {
   outline: none;
   padding: 0.2rem 0.5rem; 
   transition: color 0.3s ease, transform 0.2s ease;
-  display: flex;
+  display: flex
+  
 }
 
 .x-button:hover {
@@ -318,7 +318,7 @@ html {
   gap: 20px;
 }
 .slide-left {
-  transform: translateX(-100%); 
+  animation: slideLeft 0.5s ease-in-out forwards;
 }
 .weather-i.slide-left {
   animation: slideLeft 0.5s ease-in-out forwards;

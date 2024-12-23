@@ -19,6 +19,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [cold, setCold] = useState(false);
   const [hot, setHot] = useState(false);
+  const [isSliding, setIsSliding] = useState(false); // For handling individual slide animation
 
   const [night, setNight] = useState(false);
   const [rain, setRain] = useState(false);
@@ -64,10 +65,10 @@ function App() {
       }
 
       try {
-        const response = await fetch(`/.netlify/functions/api?city=${city}`);
-        //const response = await fetch(
-          //`http://localhost:5000/weather?city=${city}`
-        //);
+        //const response = await fetch(`/.netlify/functions/api?city=${city}`);
+        const response = await fetch(
+          `http://localhost:5000/weather?city=${city}`
+        );
 
         const data = await response.json();
         console.log(data);
@@ -420,7 +421,13 @@ function App() {
             </div>
 
             {errorMessage && <p className="weather-info">{errorMessage}</p>}
-            {loading && <OrbitProgress variant="track-disc" color="#56667e" size={"small"} />}
+            {loading && (
+              <OrbitProgress
+                variant="track-disc"
+                color="#56667e"
+                size={"small"}
+              />
+            )}
           </div>
           <div className={`weather-i  ${slideLeft ? "slide-left" : ""}`}>
             {!loading &&
@@ -429,6 +436,11 @@ function App() {
                 .slice()
                 .reverse()
                 .map((weathers, index) => {
+                  const handleDeleteClick = (city) => {
+                    setIsSliding(true);
+                    handleOnDelete(city);
+                    setIsSliding(false);
+                  };
                   let tempMax =
                     (weathers.main.temp_max - 273.15) * (9 / 5) + 32;
                   let tempMin =
@@ -459,20 +471,19 @@ function App() {
     
     ${rain ? "rain-night" : ""} 
     
-   ${animate ? "animate" : ""} ${slideLeft ? "slide-left" : ""} ${
-                        animate ? "animate" : ""
-                      }`}
+      ${isSliding ? "slide-left" : ""}
+            ${animate ? "animate" : ""}
+          `}
                       key={index}
                     >
                       <div className="head" key={index}>
-                        <h2 className="titles">{weathers.name}</h2>
-
                         <button
                           className={`x-button ${animate ? "animate" : ""}`}
-                          onClick={() => handleOnDelete(weathers.name)}
+                          onClick={() => handleDeleteClick(weathers.name)}
                         >
                           x
                         </button>
+                        <h2>{weathers.name}</h2>
                       </div>
                       {weathers.weather && weathers.weather[0] && (
                         <div className="weather-content">
