@@ -310,19 +310,27 @@ html {
   margin: 30px;
   height: 100%;
 }
-
+.header-image{
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  gap:10px;
+}
+.img{
+  width: 50px;
+  height: 60px;
+  margin-top: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  size: 12px;
+}
 .weather-i {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
   gap: 20px;
 }
-.slide-left {
-  animation: slideLeft 0.5s ease-in-out forwards;
-}
-.weather-i.slide-left {
-  animation: slideLeft 0.5s ease-in-out forwards;
-}
+
 
 @keyframes slideLeft {
   0% {
