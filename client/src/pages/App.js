@@ -65,10 +65,10 @@ function App() {
       }
 
       try {
-        //const response = await fetch(`/.netlify/functions/api?city=${city}`);
-        const response = await fetch(
-          `http://localhost:5000/weather?city=${city}`
-        );
+        const response = await fetch(`/.netlify/functions/api?city=${city}`);
+        //const response = await fetch(
+          //`http://localhost:5000/weather?city=${city}`
+        //);
 
         const data = await response.json();
         console.log(data);
@@ -374,7 +374,7 @@ function App() {
         >
           <div className="content-wrapper">
             <div className="header-image">
-          <img className="img"  src={'./weather-icon-illustration03-Graphics-10205167-1.jpg'}></img>
+          <img className="img" alt="img"  src={'./weather-icon-illustration03-Graphics-10205167-1.jpg'}></img>
             <h1 className="title">Weather</h1>
             </div>
             <div className="header">
