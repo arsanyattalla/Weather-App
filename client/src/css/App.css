@@ -131,6 +131,7 @@ html {
 }
 .background-image {
   background-image: url("../images/vecteezy_twillight-sky-blurred-background_26186529.jpg");
+  background-attachment: fixed;
 }
 
 .cloudy {
