@@ -132,6 +132,7 @@ html {
 .background-image {
   background-image: url("../images/vecteezy_twillight-sky-blurred-background_26186529.jpg");
   background-attachment: fixed;
+
 }
 
 .cloudy {
@@ -481,6 +482,9 @@ html {
     font-size: 18px;
     padding: 8px;
   }
+  .background-image{
+    background-attachment: fixed;
+  }
 }
 
 @media (max-width: 768px) {
@@ -500,6 +504,9 @@ html {
     font-size: 16px;
     padding: 6px;
   }
+  .background-image{
+    background-attachment: fixed;
+  }
 }
 
 @media (max-width: 480px) {
@@ -514,5 +521,8 @@ html {
 
   .canvas-text {
     font-size: 20px;
+  }
+  .background-image{
+    background-attachment: fixed;
   }
 }
