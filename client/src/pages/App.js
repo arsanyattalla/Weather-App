@@ -374,8 +374,12 @@ function App() {
         >
           <div className="content-wrapper">
             <div className="header-image">
-          <img className="img" alt="img"  src={'./weather-icon-illustration03-Graphics-10205167-1.jpg'}></img>
-            <h1 className="title">Weather</h1>
+              <img
+                className="img"
+                alt="img"
+                src={"./weather-icon-illustration03-Graphics-10205167-1.jpg"}
+              ></img>
+              <h1 className="title">Weather</h1>
             </div>
             <div className="header">
               <div className="search-container">
@@ -467,16 +471,16 @@ function App() {
                   return (
                     <div
                       className={`weather-info
-    ${isClear && isNight && !isCloudy && !isRain ? "cold" : ""} 
-    ${isClear && !isNight ? "hot" : ""} 
-    ${isCloudy ? "cloudy" : ""} 
-    ${isSnow && !cloudy && !isRain && !isClear ? "snow" : ""}
+                     ${isClear && isNight && !isCloudy && !isRain ? "cold" : ""} 
+                        ${isClear && !isNight ? "hot" : ""} 
+                     ${isCloudy ? "cloudy" : ""} 
+                    ${isSnow && !cloudy && !isRain && !isClear ? "snow" : ""}
     
-    ${rain ? "rain-night" : ""} 
+                      ${rain ? "rain-night" : ""} 
     
-      ${isSliding ? "slide-left" : ""}
-            ${animate ? "animate" : ""}
-          `}
+                      ${isSliding ? "slide-left" : ""}
+                            ${animate ? "animate" : ""}
+                              `}
                       key={index}
                     >
                       <div className="head" key={index}>

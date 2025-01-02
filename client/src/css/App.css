@@ -130,46 +130,12 @@ html {
   margin: 30px;
 }
 .background-image {
-  background-image: url("../images/vecteezy_twillight-sky-blurred-background_26186529.jpg");
   background-attachment: fixed;
+  background:linear-gradient(135deg, #04122c, #2a63c5);
 }
 
-.cloudy {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url("https://media1.tenor.com/m/CMVagqkcsZwAAAAd/moving-clouds-world-meteorological-day.gif");
 
-  border-radius: 12px;
-  margin-top: 20px;
-  color: #f0f0f0;
-  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: left;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  flex-direction: column;
-  font-size: 20px;
-  gap: 30px;
-  margin: 30px;
-}
-.snow {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url("../images/PHOTO-2017 Winter Outlook_Through the snowstorm-iStock-641688354-1125x534-Landscape.jpg");
 
-  border-radius: 12px;
-  margin-top: 20px;
-  color: #f0f0f0;
-  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: left;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  flex-direction: column;
-  font-size: 20px;
-  gap: 30px;
-  margin: 30px;
-}
 .head {
   display: flex;
 }
@@ -196,77 +162,7 @@ html {
   transform: scale(1); 
   color: #c0392b; 
 }
-.cold {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url("../images/vecteezy_ai-generated-beautifully-illuminated-bridge-at-night-with_37981764.jpg");
-  border-radius: 12px;
-  background-size: 180%;
-  margin-top: 20px;
-  color: #f0f0f0;
-  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: left;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  flex-direction: column;
-  font-size: 20px;
-  gap: 30px;
-  margin: 30px;
-}
 
-.rain-day {
-  background-image: url("https://media1.tenor.com/m/jkLAsKSFuwsAAAAd/rain-anime-castabide.gif");
-  border-radius: 12px;
-  margin-top: 20px;
-  color: #f0f0f0;
-  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: left;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  flex-direction: column;
-  font-size: 20px;
-  gap: 30px;
-  margin: 30px;
-}
-
-.rain-night {
-  background-image: url("https://media1.tenor.com/m/jkLAsKSFuwsAAAAd/rain-anime-castabide.gif");
-  border-radius: 12px;
-  margin-top: 20px;
-  color: #f0f0f0;
-  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: left;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  flex-direction: column;
-  font-size: 20px;
-  gap: 30px;
-  margin: 30px;
-}
-
-.hot {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url("../images/vecteezy_sunny-autumnal-meadow-and-yellow-forest-on-its-edges_12637243.jpg");
-  background-size: 160%;
-  border-radius: 12px;
-  margin-top: 20px;
-  color: #f0f0f0;
-  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: left;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  flex-direction: column;
-  font-size: 20px;
-  gap: 30px;
-  margin: 30px;
-}
 
 .suggestions-dropdown {
   position: absolute;
