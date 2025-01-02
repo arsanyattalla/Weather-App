@@ -15,11 +15,9 @@ function App() {
   const [clear, setClear] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [cloudy, setCloudy] = useState(false);
-  const [animate, setAnimate] = useState(false);
   const [loading, setLoading] = useState(false);
   const [cold, setCold] = useState(false);
   const [hot, setHot] = useState(false);
-  const [isSliding, setIsSliding] = useState(false); // For handling individual slide animation
 
   const [night, setNight] = useState(false);
   const [rain, setRain] = useState(false);
@@ -27,7 +25,6 @@ function App() {
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [triggerWeatherSearch, setTriggerWeatherSearch] = useState(false);
   const [showCanvas, setShowCanvas] = useState(true);
-  const [slideLeft, setSlideLeft] = useState(false);
 
   const canvasRef = useRef(null);
   const searchContainerRef = useRef(null);
@@ -41,7 +38,7 @@ function App() {
       setSuggestions(savedData);
     }
   };
-
+  
   const getWeather = useCallback(
     async (city) => {
       setWeather((prevWeather) => [...prevWeather]);
@@ -65,10 +62,10 @@ function App() {
       }
 
       try {
-        const response = await fetch(`/.netlify/functions/api?city=${city}`);
-        //const response = await fetch(
-          //`http://localhost:5000/weather?city=${city}`
-        //);
+        //const response = await fetch(`/.netlify/functions/api?city=${city}`);
+        const response = await fetch(
+          `http://localhost:5000/weather?city=${city}`
+        );
 
         const data = await response.json();
         console.log(data);
@@ -77,14 +74,17 @@ function App() {
         setLoading(true);
 
         setTimeout(() => {
-          setLoading(false);
           if (data.error === "City is required") {
+            setLoading(false);
+
             setWeather((prevWeather) => [...prevWeather]);
             setClear(false);
             setCloudy(false);
             setNight(false);
             setRain(false);
           } else if (!data.main || !data.main.temp) {
+            setLoading(false);
+
             setErrorMessage("Invalid city");
             setWeather((prevWeather) => [...prevWeather]);
             setClear(false);
@@ -107,13 +107,15 @@ function App() {
                     city.toLowerCase().includes(weatherItem.name.toLowerCase())
                 )
               ) {
+                setLoading(false);
+
                 return prevWeather;
               }
+              
               return [...prevWeather, data];
+
             });
-            console.log(night);
-            setAnimate(true);
-            setTimeout(() => setAnimate(false), 500);
+            setLoading(false);
 
             let temp = (data.main.temp - 273.15) * (9 / 5) + 32;
             temp = Math.round(temp);
@@ -151,7 +153,7 @@ function App() {
         setLoading(false);
       }
     },
-    [night, suggestions]
+    [suggestions]
   );
 
   const handleKeyDown = (event) => {
@@ -296,16 +298,13 @@ function App() {
   }, []);
 
   const handleOnDelete = (city) => {
-    setSlideLeft(true);
 
-    setTimeout(() => {
       setWeather((prevData) => {
         const newData = prevData.filter((item) => item.name !== city);
         return newData;
       });
+    
 
-      setSlideLeft(false);
-    }, 500);
   };
 
   const handleUseMyLocation = () => {
@@ -428,25 +427,26 @@ function App() {
             </div>
 
             {errorMessage && <p className="weather-info">{errorMessage}</p>}
-            {loading && (
+            
+          </div>
+          <div className={`weather-i`}>
+          {loading && (
               <OrbitProgress
                 variant="track-disc"
                 color="#56667e"
                 size={"small"}
+  style={{ transform: 'scale(0.1)' }}
               />
             )}
-          </div>
-          <div className={`weather-i  ${slideLeft ? "slide-left" : ""}`}>
-            {!loading &&
-              weather &&
+            {
               weather
                 .slice()
                 .reverse()
                 .map((weathers, index) => {
                   const handleDeleteClick = (city) => {
-                    setIsSliding(true);
+
                     handleOnDelete(city);
-                    setIsSliding(false);
+
                   };
                   let tempMax =
                     (weathers.main.temp_max - 273.15) * (9 / 5) + 32;
@@ -478,14 +478,12 @@ function App() {
     
                       ${rain ? "rain-night" : ""} 
     
-                      ${isSliding ? "slide-left" : ""}
-                            ${animate ? "animate" : ""}
                               `}
                       key={index}
                     >
                       <div className="head" key={index}>
                         <button
-                          className={`x-button ${animate ? "animate" : ""}`}
+                          className={`x-button`}
                           onClick={() => handleDeleteClick(weathers.name)}
                         >
                           x

@@ -119,16 +119,46 @@ html {
   margin-top: 20px;
   color: #f0f0f0;
   text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   padding: 10px;
   border-radius: 10px;
   text-align: left;
-  transition: transform 0.5s ease, opacity 0.5s ease;
   flex-direction: column;
   font-size: 20px;
-  gap: 30px;
-  margin: 30px;
+  opacity: 1;
+  transform: translateY(0);
+  animation: fadeIn 2s ease-in-out;
+
+
 }
+@keyframes slideDown {
+  0% {
+    transform: translateY(-100%); /* Start from above */
+    opacity: 0; /* Start invisible */
+  }
+  100% {
+    transform: translateY(0); /* Move to final position */
+    opacity: 1; /* Fade in */
+  }
+}
+.animate {
+  animation: slideDown 2s ease-out forwards; /* Adjust timing as needed */
+}
+.slide-left{
+  animation: slideLeft 1s ease-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
 .background-image {
   background-attachment: fixed;
   background:linear-gradient(135deg, #04122c, #2a63c5);
@@ -223,11 +253,12 @@ html {
 }
 .weather-i {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  gap: 20px;
-}
+  flex-direction: column; /* Stack cards vertically */
+  align-items: center;   /* Center align cards horizontally */
+  gap: 20px;             /* Add spacing between cards */
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 
+}
 
 @keyframes slideLeft {
   0% {
@@ -304,6 +335,8 @@ html {
   margin-top: 20px;
   gap: 5px;
   font-size: 25px;
+  animation: slideDown 2s ease-out forwards; /* Adjust timing as needed */
+
 }
 
 .weather-content {
@@ -315,6 +348,10 @@ html {
   font-size: 1.5rem;
   color: #76d7c4;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  animation: slideDown 2s ease-out forwards; /* Adjust timing as needed */
+
+
 }
 
 @keyframes fadeInUp {
@@ -346,6 +383,9 @@ html {
 
 .temp {
   font-size: larger;
+}
+.temp-min{
+  font-size: 20px;
 }
 
 .temp1 {
