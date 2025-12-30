@@ -20,7 +20,7 @@ function App() {
   initAI();
 }, []);
   const [city, setCity] = useState("");
-  const [weather, setWeather] = useState([]);
+  const [weather, setWeather] = useState(null);
   const [clear, setClear] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [cloudy, setCloudy] = useState(false);
@@ -90,25 +90,32 @@ function resetWeatherStates() {
 
         // ✅ Valid city
         setWeather(city);       // ← set ONCE
-        saveInput(city);        // ← history handled here
+        saveInput(city);
 
-        let temp = Math.round((data.main.temp - 273.15) * (9 / 5) + 32);
+let temp = Math.round((data.main.temp - 273.15) * (9 / 5) + 32);
 
-        setCold(temp < 75);
-        setHot(temp >= 75);
+const aiSuggestion = getSuggestion(temp);
 
-        const suggestion = getSuggestion(temp);
-        setAiSuggestion(suggestion);
+setCold(temp < 75);
+setHot(temp >= 75);
 
-        const desc = data.weather[0].description;
-        setClear(desc === "clear sky");
-        setCloudy(desc.includes("cloud"));
-        setRain(desc.includes("rain"));
+const desc = data.weather[0].description;
+setClear(desc === "clear sky");
+setCloudy(desc.includes("cloud"));
+setRain(desc.includes("rain"));
 
-      }, 1000);
-
+setWeather({
+  ...data,
+  aiSuggestion,
+});
+    
+    
+  
+  
+      }, 500);
     } catch (error) {
       console.error("Error fetching weather data:", error);
+      setErrorMessage("Error fetching weather data");
       setLoading(false);
       resetWeatherStates();
     }
@@ -130,24 +137,17 @@ function resetWeatherStates() {
     setCity(input);
     setTriggerWeatherSearch(false);
 
-    if (input) {
+    if (input.length > 0) {
       const savedData = JSON.parse(localStorage.getItem("inputData")) || [];
-      console.log(savedData);
-      const filteredSuggestions = suggestions.filter(
-        (suggestion) =>
-          suggestion &&
-          typeof suggestion === "string" &&
-          suggestion.toLowerCase().includes(input.toLowerCase())
+      const filteredSuggestions = savedData.filter((item) =>
+        item.toLowerCase().startsWith(input.toLowerCase())
       );
-
       setSuggestions(filteredSuggestions);
+      setShowSuggestions(true);
     } else {
-      setSuggestions(JSON.parse(localStorage.getItem("inputData")) || []);
+      setShowSuggestions(false);
     }
-
-    setShowSuggestions(true);
   };
-
   const handleClickOutside = (event) => {
     if (
       searchContainerRef.current &&
@@ -248,15 +248,7 @@ function resetWeatherStates() {
     };
   }, []);
 
-  const handleOnDelete = (city) => {
-
-      setWeather((prevData) => {
-        const newData = prevData.filter((item) => item.name !== city);
-        return newData;
-      });
-    
-
-  };
+  
 
   const handleUseMyLocation = () => {
     if (navigator.geolocation) {
@@ -390,15 +382,9 @@ function resetWeatherStates() {
               />
             )}
             {
-              weather
-                .slice()
-                .reverse()
-                .map((weathers, index) => {
-                  const handleDeleteClick = (city) => {
-
-                    handleOnDelete(city);
-
-                  };
+            
+                weather && (() => {
+                   const weathers = weather;
                   let tempMax =
                     (weathers.main.temp_max - 273.15) * (9 / 5) + 32;
                   let tempMin =
