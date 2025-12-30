@@ -16,7 +16,6 @@ function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const [cold, setCold] = useState(false);
   const [hot, setHot] = useState(false);
   const [night, setNight] = useState(false);
   const [cloudy, setCloudy] = useState(false);
@@ -37,7 +36,6 @@ function App() {
 
   /* ---------------- HELPERS ---------------- */
   const resetWeatherStates = () => {
-    setCold(false);
     setHot(false);
     setCloudy(false);
     setRain(false);
@@ -157,14 +155,14 @@ function App() {
     }, 60000);
 
     return () => clearInterval(interval);
-  }, [city]);
+  }, [city, getWeather]);
 
   useEffect(() => {
     if (triggerWeatherSearch && city) {
       getWeather(city);
       setTriggerWeatherSearch(false);
     }
-  }, [triggerWeatherSearch, city]);
+  }, [triggerWeatherSearch, city, getWeather]);
 
   /* ---------------- CANVAS ---------------- */
   useEffect(() => {
