@@ -12,7 +12,7 @@ import { trainModel, getSuggestion } from "../utils/aiModel";
 
 function App() {
   const [city, setCity] = useState("");
-  const [weather, setWeather] = useState(null);
+  const [weather] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -240,7 +240,7 @@ const getWeather = useCallback(async (cityName) => {
 
                 <div className="ai-suggestion">
                   <h3>AI Suggestion</h3>
-                  <p>{weather.aiSuggestion}</p>
+                  <p>{aiSuggestion}</p>
                 </div>
               </div>
             )}
