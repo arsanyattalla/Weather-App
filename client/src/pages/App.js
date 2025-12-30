@@ -78,7 +78,6 @@ function App() {
       const tempF = Math.round((data.main.temp - 273.15) * (9 / 5) + 32);
       const desc = data.weather[0].description;
 
-      setCold(tempF < 75);
       setHot(tempF >= 75);
       setCloudy(desc.includes("cloud"));
       setRain(desc.includes("rain"));
