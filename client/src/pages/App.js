@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import "../css/App.css";
 import image from "../images/clearsky.png";
 import cloud from "../images/cloudy.png";
