@@ -416,15 +416,9 @@ setWeather({
                       ${rain ? "rain-night" : ""} 
     
                               `}
-                      key={index}
                     >
-                      <div className="head" key={index}>
-                        <button
-                          className={`x-button`}
-                          onClick={() => handleDeleteClick(weathers.name)}
-                        >
-                          x
-                        </button>
+                      <div className="head" >
+                       
                         <h2>{weathers.name}</h2>
                       </div>
                       {weathers.weather && weathers.weather[0] && (
