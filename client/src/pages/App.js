@@ -52,7 +52,7 @@ function App() {
   };
 
   /* ---------------- WEATHER FETCH ---------------- */
-  const getWeather = async (cityName) => {
+const getWeather = useCallback(async (cityName) => {
     if (!cityName.trim()) {
       setErrorMessage("Please enter a city name");
       return;
@@ -98,7 +98,7 @@ function App() {
     } finally {
       setLoading(false);
     }
-  };
+}, []);
 
   /* ---------------- INPUT HANDLERS ---------------- */
   const handleKeyDown = (e) => {
