@@ -95,6 +95,8 @@ function resetWeatherStates() {
 let temp = Math.round((data.main.temp - 273.15) * (9 / 5) + 32);
 
 const aiSuggestion = getSuggestion(temp);
+setAiSuggestion(aiSuggestion);
+
 
 setCold(temp < 75);
 setHot(temp >= 75);
