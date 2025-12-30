@@ -8,8 +8,17 @@ import {
   WiRainMix,
 } from "weather-icons-react";
 import { OrbitProgress } from "react-loading-indicators";
+import { trainModel, getSuggestion } from "../utils/aiModel";
 
 function App() {
+  const [aiSuggestion, setAiSuggestion] = useState("");
+
+  useEffect(() => {
+  async function initAI() {
+    await trainModel();
+  }
+  initAI();
+}, []);
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState([]);
   const [clear, setClear] = useState(false);
@@ -39,122 +48,68 @@ function App() {
     }
   };
   
-  const getWeather = useCallback(
-    async (city) => {
-      setWeather((prevWeather) => [...prevWeather]);
+ const getWeather = useCallback(
+  async (city) => {
+    if (!city.trim()) {
+      setErrorMessage("Please Enter a City name");
+      setLoading(false);
+      return;
+    }
 
-      if (city === "") {
-        setErrorMessage("Please Enter a City name");
+    setErrorMessage(false);
+    setLoading(true);
+
+    // Night check
+    const hour = new Date().getHours();
+    setNight(hour >= 18 || hour < 5);
+
+   try {
+        //const response = await fetch(`/.netlify/functions/api?city=${city}`);
+        const response = await fetch(
+          `http://localhost:5000/weather?city=${city}`
+        );
+
+      const data = await response.json();
+
+      setTimeout(() => {
         setLoading(false);
-        setWeather((prevWeather) => [...prevWeather]);
 
-        return;
-      }
+        // ❌ Invalid city
+        if (!data.main || !data.main.temp) {
+          setErrorMessage("Invalid city");
+          resetWeatherStates();
+          return;
+        }
 
-      setErrorMessage(false);
+        // ✅ Valid city
+        setWeather(city);       // ← set ONCE
+        saveInput(city);        // ← history handled here
 
-      const now = new Date();
-      const hour = now.getHours();
-      if (hour >= 18 || hour < 5) {
-        setNight(true);
-      } else {
-        setNight(false);
-      }
+        let temp = Math.round((data.main.temp - 273.15) * (9 / 5) + 32);
 
-      try {
-        const response = await fetch(`/.netlify/functions/api?city=${city}`);
-        //const response = await fetch(
-          //`http://localhost:5000/weather?city=${city}`
-        //);
+        setCold(temp < 75);
+        setHot(temp >= 75);
 
-        const data = await response.json();
-        console.log(data);
-        console.log(city);
-        console.log(suggestions);
-        setLoading(true);
+        const suggestion = getSuggestion(temp);
+        setAiSuggestion(suggestion);
 
-        setTimeout(() => {
-          if (data.error === "City is required") {
-            setLoading(false);
+        const desc = data.weather[0].description;
+        setClear(desc === "clear sky");
+        setCloudy(desc.includes("cloud"));
+        setRain(desc.includes("rain"));
 
-            setWeather((prevWeather) => [...prevWeather]);
-            setClear(false);
-            setCloudy(false);
-            setNight(false);
-            setRain(false);
-          } else if (!data.main || !data.main.temp) {
-            setLoading(false);
+      }, 1000);
 
-            setErrorMessage("Invalid city");
-            setWeather((prevWeather) => [...prevWeather]);
-            setClear(false);
-            setCloudy(false);
-            setCold(false);
-            setHot(false);
-            setRain(false);
-            setNight(false);
-          } else {
-            saveInput(city);
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+      setLoading(false);
+      resetWeatherStates();
+    }
+  },
+  []
+);
 
-            setWeather((prevWeather) => {
-              if (
-                prevWeather.some(
-                  (weatherItem) =>
-                    weatherItem.name.toLowerCase() === city.toLowerCase() ||
-                    weatherItem.name
-                      .toLowerCase()
-                      .includes(city.toLowerCase()) ||
-                    city.toLowerCase().includes(weatherItem.name.toLowerCase())
-                )
-              ) {
-                setLoading(false);
-
-                return prevWeather;
-              }
-              
-              return [...prevWeather, data];
-
-            });
-            setLoading(false);
-
-            let temp = (data.main.temp - 273.15) * (9 / 5) + 32;
-            temp = Math.round(temp);
-            if (temp < 75) {
-              setCold(true);
-              setHot(false);
-            } else {
-              setCold(false);
-              setHot(true);
-            }
-
-            let desc = data.weather[0].description;
-            if (desc === "clear sky") {
-              setClear(true);
-              setCloudy(false);
-              setRain(false);
-            } else if (desc.includes("clouds") || desc === "cloudy") {
-              setCloudy(true);
-              setClear(false);
-              setRain(false);
-            } else if (desc.includes("rain")) {
-              setCloudy(false);
-              setClear(false);
-              setRain(true);
-            } else {
-              setCloudy(false);
-              setClear(false);
-            }
-          }
-        }, 1000);
-      } catch (error) {
-        console.error("Error fetching weather data:", error);
-        setClear(false);
-        setCloudy(false);
-        setLoading(false);
-      }
-    },
-    [suggestions]
-  );
+     
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -223,18 +178,7 @@ function App() {
 
   /* eslint-disable react-hooks/exhaustive-deps */
 
-  useEffect(() => {
-    let cities = ["Los Angeles", "Cairo", "New York"];
 
-    const fetchWeatherWithAnimation = async (city) => {
-      setTimeout(() => {
-        getWeather(city);
-      }, 500); // Match this duration to the CSS animation
-    };
-    for (let city of cities) {
-      fetchWeatherWithAnimation(city);
-    }
-  }, []);
   /* eslint-enable react-hooks/exhaustive-deps */
 
   useEffect(() => {
@@ -520,6 +464,10 @@ function App() {
                       )}
                       {weathers.main ? (
                         <div className="temperature-container">
+                        <div className="ai-suggestion">
+  <h3>AI Suggestion:</h3>
+  <p>{aiSuggestion}</p>
+</div>
                           {hot && <WiThermometer size={34} color="#e04b4b" />}
                           {!hot && <WiThermometer size={34} color="#428ee6" />}
                           <span className="temp">{temp}°F</span>
