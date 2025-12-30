@@ -28,12 +28,18 @@ function App() {
   const [showCanvas, setShowCanvas] = useState(true);
   const canvasRef = useRef(null);
   const searchContainerRef = useRef(null);
+const [aiSuggestion, setAiSuggestion] = useState("");
 
   /* ---------------- AI INIT ---------------- */
   useEffect(() => {
     trainModel();
   }, []);
-
+useEffect(() => {
+  if (weather?.tempF != null) {
+    const suggestion = getSuggestion(weather.tempF);
+    setAiSuggestion(suggestion);
+  }
+}, [weather?.tempF]);
   /* ---------------- HELPERS ---------------- */
   const resetWeatherStates = () => {
     setHot(false);
@@ -82,14 +88,7 @@ const getWeather = useCallback(async (cityName) => {
       setCloudy(desc.includes("cloud"));
       setRain(desc.includes("rain"));
 
-      const aiSuggestion = getSuggestion(tempF);
-
-      setWeather({
-        ...data,
-        tempF,
-        aiSuggestion,
-      });
-
+   
       saveInput(cityName);
     } catch (err) {
       console.error(err);
