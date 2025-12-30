@@ -37,7 +37,14 @@ function App() {
 
   const canvasRef = useRef(null);
   const searchContainerRef = useRef(null);
-
+function resetWeatherStates() {
+  setClear(false);
+  setCloudy(false);
+  setRain(false);
+  setCold(false);
+  setHot(false);
+  setNight(false);
+}
   const saveInput = (data) => {
     let savedData = JSON.parse(localStorage.getItem("inputData")) || [];
 
