@@ -12,7 +12,7 @@ import { trainModel, getSuggestion } from "../utils/aiModel";
 
 function App() {
   const [city, setCity] = useState("");
-  const [weather] = useState(null);
+const [weather, setWeather] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -81,8 +81,12 @@ const getWeather = useCallback(async (cityName) => {
         return;
       }
 
-      const tempF = Math.round((data.main.temp - 273.15) * (9 / 5) + 32);
-      const desc = data.weather[0].description;
+const tempF = Math.round((data.main.temp - 273.15) * (9 / 5) + 32);
+
+setWeather({
+  ...data,
+  tempF,
+});      const desc = data.weather[0].description;
 
       setHot(tempF >= 75);
       setCloudy(desc.includes("cloud"));
