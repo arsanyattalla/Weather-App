@@ -37,9 +37,10 @@ const [aiSuggestion, setAiSuggestion] = useState("");
 useEffect(() => {
   if (weather?.tempF != null) {
     const suggestion = getSuggestion(weather.tempF);
+    console.log(weather.tempF, suggestion);
     setAiSuggestion(suggestion);
   }
-}, [weather?.tempF]);
+}, [weather]);
   /* ---------------- HELPERS ---------------- */
   const resetWeatherStates = () => {
     setHot(false);
@@ -71,6 +72,8 @@ const getWeather = useCallback(async (cityName) => {
     setNight(hour >= 18 || hour < 5);
 
     try {
+      //const response = await fetch(`http://localhost:5000/weather?city=${cityName}`);
+
       const response = await fetch(`/.netlify/functions/api?city=${cityName}`);
       const data = await response.json();
 
@@ -82,7 +85,8 @@ const getWeather = useCallback(async (cityName) => {
       }
 
 const tempF = Math.round((data.main.temp - 273.15) * (9 / 5) + 32);
-
+console.log(data.main.temp);
+console.log(tempF);
 setWeather({
   ...data,
   tempF,

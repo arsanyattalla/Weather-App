@@ -1,47 +1,49 @@
 import * as tf from "@tensorflow/tfjs";
 
-const data = [
-  { temp: 80, suggestion: 0 },
-  { temp: 75, suggestion: 0 },
-  { temp: 70, suggestion: 0 },
-  { temp: 65, suggestion: 1 },
-  { temp: 60, suggestion: 1 },
-  { temp: 55, suggestion: 1 },
-  { temp: 50, suggestion: 2 },
-  { temp: 45, suggestion: 2 },
-  { temp: 40, suggestion: 2 },
-];
 const suggestionMap = [
-  "Wear light clothes",
-  "Wear a jacket",
-  "Wear a heavy coat",
+  "Wear light clothes",   // hot
+  "Wear a jacket",        // moderate
+  "Wear a heavy coat",    // cold
 ];
 
 let model;
 
+
+const data = [];
+for (let t = 30; t <= 90; t += 1) {
+  let label = t >= 75 ? 0 : t >= 55 ? 1 : 2;
+  data.push({ temp: t, suggestion: label });
+}
+
 export async function trainModel() {
-  const xs = tf.tensor2d(data.map(d => [d.temp]));
-  const ys = tf.tensor1d(data.map(d => d.suggestion)).toFloat(); // <-- FIX
+  const xs = tf.tensor2d(data.map(d => [d.temp]), [data.length, 1], "float32");
+  const ys = tf.tensor1d(data.map(d => d.suggestion), "float32"); 
 
   model = tf.sequential();
-  model.add(tf.layers.dense({ inputShape: [1], units: 5, activation: "relu" }));
+  model.add(tf.layers.dense({ inputShape: [1], units: 10, activation: "relu" }));
   model.add(tf.layers.dense({ units: 3, activation: "softmax" }));
 
   model.compile({
     optimizer: "adam",
-    loss: "sparseCategoricalCrossentropy", // still works with float ys
+    loss: "sparseCategoricalCrossentropy",
     metrics: ["accuracy"],
   });
 
-  await model.fit(xs, ys, { epochs: 200 });
+  await model.fit(xs, ys, { epochs: 300 });
+  console.log("AI model trained successfully");
+
+  xs.dispose();
+  ys.dispose();
 }
 
 export function getSuggestion(temp) {
   if (!model) return "AI model not trained yet";
 
-  const input = tf.tensor2d([[temp]]);
+  const input = tf.tensor2d([[temp]], [1, 1], "float32");
   const prediction = model.predict(input);
   const predictedIndex = tf.tidy(() => prediction.argMax(-1).dataSync()[0]);
-  input.dispose(); // dispose input tensor
+  input.dispose();
+console.log(model.layers[0].getWeights()); 
+console.log(model.layers[1].getWeights());
   return suggestionMap[predictedIndex];
 }
