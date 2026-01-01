@@ -21,8 +21,6 @@ const [weather, setWeather] = useState(null);
   const [cloudy, setCloudy] = useState(false);
   const [rain, setRain] = useState(false);
 
-  const [suggestions, setSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [triggerWeatherSearch, setTriggerWeatherSearch] = useState(false);
 
   const [showCanvas, setShowCanvas] = useState(true);
@@ -49,14 +47,7 @@ useEffect(() => {
     setNight(false);
   };
 
-  const saveInput = (value) => {
-    const stored = JSON.parse(localStorage.getItem("inputData")) || [];
-    if (!stored.includes(value)) {
-      stored.push(value);
-      localStorage.setItem("inputData", JSON.stringify(stored));
-    }
-    setSuggestions(stored);
-  };
+  
 
   /* ---------------- WEATHER FETCH ---------------- */
 const getWeather = useCallback(async (cityName) => {
@@ -72,17 +63,12 @@ const getWeather = useCallback(async (cityName) => {
     setNight(hour >= 18 || hour < 5);
 
     try {
-      //const response = await fetch(`http://localhost:5000/weather?city=${cityName}`);
+      const response = await fetch(`http://localhost:5000/weather?city=${cityName}`);
 
-      const response = await fetch(`/.netlify/functions/api?city=${cityName}`);
       const data = await response.json();
+      //const data = await response.json();
 
-      if (!data?.main?.temp) {
-        setErrorMessage("Invalid city");
-        resetWeatherStates();
-        setLoading(false);
-        return;
-      }
+      
 
 const tempF = Math.round((data.main.temp - 273.15) * (9 / 5) + 32);
 console.log(data.main.temp);
@@ -97,7 +83,6 @@ setWeather({
       setRain(desc.includes("rain"));
 
    
-      saveInput(cityName);
     } catch (err) {
       console.error(err);
       setErrorMessage("Error fetching weather data");
@@ -107,54 +92,20 @@ setWeather({
     }
 }, []);
 
-  /* ---------------- INPUT HANDLERS ---------------- */
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      setTriggerWeatherSearch(true);
-      setShowSuggestions(false);
-    }
-  };
+
 
   const handleInputChange = (e) => {
     const value = e.target.value;
     setCity(value);
     setTriggerWeatherSearch(false);
 
-    if (!value) {
-      setShowSuggestions(false);
-      return;
-    }
+   
+  }
 
-    const stored = JSON.parse(localStorage.getItem("inputData")) || [];
-    setSuggestions(
-      stored.filter((item) =>
-        item.toLowerCase().startsWith(value.toLowerCase())
-      )
-    );
-    setShowSuggestions(true);
-  };
+  
 
-  const handleSuggestionClick = (value) => {
-    setCity(value);
-    setShowSuggestions(false);
-    setTriggerWeatherSearch(true);
-  };
+ 
 
-  /* ---------------- CLICK OUTSIDE ---------------- */
-  useEffect(() => {
-    const handler = (e) => {
-      if (
-        searchContainerRef.current &&
-        !searchContainerRef.current.contains(e.target)
-      ) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  /* ---------------- AUTO REFRESH ---------------- */
   useEffect(() => {
     const interval = setInterval(() => {
       if (city) getWeather(city);
@@ -180,7 +131,7 @@ setWeather({
   const handleUseMyLocation = () => {
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const { latitude, longitude } = pos.coords;
-      const apiKey = "YOUR_API_KEY";
+      const apiKey = "30d4741c779ba94c470ca1f63045390a";
       const url = `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${apiKey}`;
 
       const res = await fetch(url);
@@ -199,32 +150,38 @@ setWeather({
       {showCanvas && (
         <div>
           <canvas ref={canvasRef} className="canvas-animation" />
-          <div className="canvas-text">Weather App</div>
+          <div className="canvas-text"><img
+                className="img"
+                alt="img"
+                src={"./weather-icon-illustration03-Graphics-10205167-1.jpg"}
+              ></img>
+              </div>
         </div>
       )}
 
       {!showCanvas && (
         <div className="background-image">
           <div className="content-wrapper">
+            <div className="header-image">
+              <img
+                className="img"
+                alt="img"
+                src={"./weather-icon-illustration03-Graphics-10205167-1.jpg"}
+              ></img>
+              <h1 className="title">Weather</h1>
+            </div>
             <div className="search-container" ref={searchContainerRef}>
               <input
                 value={city}
                 onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
                 placeholder="Enter city"
+                className="city-input"
               />
-              <button onClick={() => getWeather(city)}>Search</button>
+              <button className="weather-button" onClick={() => getWeather(city)}>Search</button>
               <button onClick={handleUseMyLocation}>Use My Location</button>
 
-              {showSuggestions && (
-                <div className="suggestions-dropdown">
-                  {suggestions.map((s, i) => (
-                    <div key={i} onClick={() => handleSuggestionClick(s)}>
-                      {s}
-                    </div>
-                  ))}
-                </div>
-              )}
+             
+              
             </div>
 
             {loading && <OrbitProgress size="small" />}
@@ -232,11 +189,12 @@ setWeather({
 
             {weather && (
               <div className="weather-info">
+                <div className="head">
                 <h2>{weather.name}</h2>
-
+                </div>
                 <div className="weather-content">
-                  {cloudy && <img src={cloud} alt="cloudy" />}
-                  {!cloudy && !rain && <img src={image} alt="clear" />}
+                  {cloudy && <img className="img" src={cloud} alt="cloudy" />}
+                  {!cloudy && !rain && <img className="img" src={image} alt="clear" />}
                   {night && <WiMoonWaxingCrescent3 />}
                   {rain && <WiRainMix />}
                 </div>
@@ -246,8 +204,7 @@ setWeather({
                   <span>{weather.tempF}°F</span>
                 </div>
 
-                <div className="ai-suggestion">
-                  <h3>AI Suggestion</h3>
+                <div className="temperature-container">
                   <p>{aiSuggestion}</p>
                 </div>
               </div>
