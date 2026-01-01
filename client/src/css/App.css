@@ -16,7 +16,7 @@ html {
 .search-container {
   position: relative;
   display: flex;
-  width: 80%;
+  width: 100%;
 }
 
 .suggestions-dropdown {

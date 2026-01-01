@@ -12,7 +12,7 @@ import { trainModel, getSuggestion } from "../utils/aiModel";
 
 function App() {
   const [city, setCity] = useState("");
-const [weather, setWeather] = useState(null);
+  const [weather, setWeather] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -26,19 +26,13 @@ const [weather, setWeather] = useState(null);
   const [showCanvas, setShowCanvas] = useState(true);
   const canvasRef = useRef(null);
   const searchContainerRef = useRef(null);
-const [aiSuggestion, setAiSuggestion] = useState("");
+  const [aiSuggestion, setAiSuggestion] = useState("");
 
   /* ---------------- AI INIT ---------------- */
   useEffect(() => {
     trainModel();
   }, []);
-useEffect(() => {
-  if (weather?.tempF != null) {
-    const suggestion = getSuggestion(weather.tempF);
-    console.log(weather.tempF, suggestion);
-    setAiSuggestion(suggestion);
-  }
-}, [weather]);
+  
   /* ---------------- HELPERS ---------------- */
   const resetWeatherStates = () => {
     setHot(false);
@@ -47,10 +41,8 @@ useEffect(() => {
     setNight(false);
   };
 
-  
-
   /* ---------------- WEATHER FETCH ---------------- */
-const getWeather = useCallback(async (cityName) => {
+  const getWeather = useCallback(async (cityName) => {
     if (!cityName.trim()) {
       setErrorMessage("Please enter a city name");
       return;
@@ -63,26 +55,27 @@ const getWeather = useCallback(async (cityName) => {
     setNight(hour >= 18 || hour < 5);
 
     try {
-      const response = await fetch(`http://localhost:5000/weather?city=${cityName}`);
+      
+      const response = await fetch(`./netlify/functions/weather?city=${cityName}`);
+      //const response = await fetch(
+        //`http://localhost:5000/weather?city=${cityName}`
+      //);
 
       const data = await response.json();
       //const data = await response.json();
 
-      
-
-const tempF = Math.round((data.main.temp - 273.15) * (9 / 5) + 32);
-console.log(data.main.temp);
-console.log(tempF);
-setWeather({
-  ...data,
-  tempF,
-});      const desc = data.weather[0].description;
+      const tempF = Math.round((data.main.temp - 273.15) * (9 / 5) + 32);
+      console.log(data.main.temp);
+      console.log(tempF);
+      setWeather({
+        ...data,
+        tempF,
+      });
+      const desc = data.weather[0].description;
 
       setHot(tempF >= 75);
       setCloudy(desc.includes("cloud"));
       setRain(desc.includes("rain"));
-
-   
     } catch (err) {
       console.error(err);
       setErrorMessage("Error fetching weather data");
@@ -90,21 +83,19 @@ setWeather({
     } finally {
       setLoading(false);
     }
-}, []);
-
-
-
+  }, []);
+useEffect(() => {
+    if (weather?.tempF != null) {
+      const suggestion = getSuggestion(weather.tempF);
+      console.log(weather.tempF, suggestion);
+      setAiSuggestion(suggestion);
+    }
+  }, [getWeather, weather]);
   const handleInputChange = (e) => {
     const value = e.target.value;
     setCity(value);
     setTriggerWeatherSearch(false);
-
-   
-  }
-
-  
-
- 
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -127,7 +118,6 @@ setWeather({
     return () => clearTimeout(timer);
   }, []);
 
-  /* ---------------- GEOLOCATION ---------------- */
   const handleUseMyLocation = () => {
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const { latitude, longitude } = pos.coords;
@@ -144,18 +134,18 @@ setWeather({
     });
   };
 
-  /* ---------------- RENDER ---------------- */
   return (
     <>
       {showCanvas && (
         <div>
           <canvas ref={canvasRef} className="canvas-animation" />
-          <div className="canvas-text"><img
-                className="img"
-                alt="img"
-                src={"./weather-icon-illustration03-Graphics-10205167-1.jpg"}
-              ></img>
-              </div>
+          <div className="canvas-text">
+            <img
+              className="img"
+              alt="img"
+              src={"./weather-icon-illustration03-Graphics-10205167-1.jpg"}
+            ></img>
+          </div>
         </div>
       )}
 
@@ -177,11 +167,15 @@ setWeather({
                 placeholder="Enter city"
                 className="city-input"
               />
-              <button className="weather-button" onClick={() => getWeather(city)}>Search</button>
-              <button onClick={handleUseMyLocation}>Use My Location</button>
-
-             
-              
+              <button
+                className="weather-button"
+                onClick={() => getWeather(city)}
+              >
+                Search
+              </button>
+              <href className="location" onClick={handleUseMyLocation}>
+                Use My Location
+              </href>
             </div>
 
             {loading && <OrbitProgress size="small" />}
@@ -190,12 +184,14 @@ setWeather({
             {weather && (
               <div className="weather-info">
                 <div className="head">
-                <h2>{weather.name}</h2>
+                  <h2>{weather.name}</h2>
                 </div>
                 <div className="weather-content">
                   {cloudy && <img className="img" src={cloud} alt="cloudy" />}
-                  {!cloudy && !rain && <img className="img" src={image} alt="clear" />}
-                  {night && <WiMoonWaxingCrescent3 />}
+                  {!cloudy && !rain && (
+                    <img className="img" src={image} alt="clear" />
+                  )}
+                  {night && !rain && !cloudy && <WiMoonWaxingCrescent3 />}
                   {rain && <WiRainMix />}
                 </div>
 
